@@ -1,0 +1,656 @@
+openapi: 3.1.2
+info:
+  title: FetchMux Retrieval API
+  version: 0.1.0
+  summary: Provider-neutral retrieval routing with auditable route receipts
+  description: |
+    This document defines the FetchMux gateway contract. It does not describe, replace, or imply
+    endorsement by any upstream provider. Provider credentials remain operator-controlled in the
+    founding BYOK deployment.
+
+    `/health` and `/ready` are public operational probes. Every `/v1/*` route requires a FetchMux
+    bearer key unless the operator has deliberately set `FETCHMUX_AUTH_DISABLED=true` for a trusted
+    local environment.
+servers:
+  - url: http://127.0.0.1:8787
+    description: Default local gateway
+tags:
+  - name: Operations
+    description: Process health and provider readiness
+  - name: Retrieval
+    description: Protected provider status, route preview, and retrieval execution
+paths:
+  /health:
+    get:
+      tags: [Operations]
+      operationId: getHealth
+      summary: Check whether the gateway process is serving requests
+      security: []
+      responses:
+        "200":
+          description: Gateway process is healthy
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthEnvelope"
+  /ready:
+    get:
+      tags: [Operations]
+      operationId: getReadiness
+      summary: Check whether at least one retrieval provider is configured
+      security: []
+      responses:
+        "200":
+          description: At least one provider is configured
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadinessEnvelope"
+        "503":
+          description: No retrieval provider is configured
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadinessEnvelope"
+  /v1/providers:
+    get:
+      tags: [Retrieval]
+      operationId: listProviders
+      summary: List safe provider availability and capability status
+      description: Returns configuration status and issues, never provider credentials.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Safe status for every supported provider
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderListEnvelope"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "503":
+          $ref: "#/components/responses/AuthNotConfigured"
+  /v1/route/preview:
+    post:
+      tags: [Retrieval]
+      operationId: previewRoute
+      summary: Preview eligible routes without calling an upstream provider
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequest"
+            examples:
+              freshFacts:
+                summary: Quality-oriented fresh-facts route
+                value:
+                  query: latest Node.js stable release
+                  task: fresh_facts
+                  priority: quality
+                  freshness: 30d
+                  maxCostUsd: 0.02
+                  maxLatencyMs: 8000
+                  limit: 8
+      responses:
+        "200":
+          description: Ordered eligible candidates and inspectable score components
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutePreviewEnvelope"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "503":
+          $ref: "#/components/responses/AuthNotConfigured"
+  /v1/search:
+    post:
+      tags: [Retrieval]
+      operationId: search
+      summary: Execute one policy-routed retrieval request
+      description: |
+        Selects an eligible configured provider, executes inside the absolute deadline and budget,
+        normalizes evidence, and returns an auditable route receipt. Safe failover is limited to
+        classified retryable errors.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequest"
+            examples:
+              boundedSearch:
+                value:
+                  query: latest Node.js stable release
+                  task: fresh_facts
+                  priority: balanced
+                  freshness: 30d
+                  maxCostUsd: 0.02
+                  maxLatencyMs: 8000
+                  limit: 8
+      responses:
+        "200":
+          description: Normalized evidence and route receipt
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchEnvelope"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "413":
+          $ref: "#/components/responses/PayloadTooLarge"
+        "422":
+          description: A validated request could not satisfy a hard routing policy
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          description: Authentication, provider availability, or upstream completion is unavailable
+          headers:
+            x-request-id:
+              $ref: "#/components/headers/RequestId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque FetchMux API key
+      description: A key configured in `FETCHMUX_API_KEY` or `FETCHMUX_API_KEYS`.
+  headers:
+    RequestId:
+      description: Fastify request identifier for operational correlation
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid FetchMux bearer key
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/RequestId"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: UNAUTHORIZED
+              message: A valid FetchMux API key is required
+    AuthNotConfigured:
+      description: Protected routes cannot start because FetchMux authentication has no key
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/RequestId"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: NOT_READY
+              message: FetchMux authentication is not configured
+    InvalidRequest:
+      description: Request body failed FetchMux validation
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/RequestId"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Invalid retrieval request
+              details:
+                - field: query
+                  message: "Too small: expected string to have >=1 characters"
+    PayloadTooLarge:
+      description: Request body exceeded 64 KiB
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/RequestId"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: PAYLOAD_TOO_LARGE
+              message: The request body is too large
+    InternalError:
+      description: Safe generic failure with no upstream body or secret material
+      headers:
+        x-request-id:
+          $ref: "#/components/headers/RequestId"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+          example:
+            error:
+              code: INTERNAL_ERROR
+              message: The request could not be completed
+  schemas:
+    HealthEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [status, version]
+          properties:
+            status:
+              const: ok
+            version:
+              type: string
+    ReadinessEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [status, availableProviders]
+          properties:
+            status:
+              type: string
+              enum: [ready, not_ready]
+            availableProviders:
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+    ProviderListEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [providers]
+          properties:
+            providers:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProviderStatus"
+    ProviderStatus:
+      type: object
+      additionalProperties: false
+      required: [id, displayName, available, costConfigured, supportedTasks, issues]
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        displayName:
+          type: string
+        available:
+          type: boolean
+        costConfigured:
+          type: boolean
+        supportedTasks:
+          type: array
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/RetrievalTask"
+        issues:
+          type: array
+          items:
+            type: string
+    SearchRequest:
+      type: object
+      additionalProperties: false
+      required: [query]
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 400
+        priority:
+          $ref: "#/components/schemas/RetrievalPriority"
+        task:
+          $ref: "#/components/schemas/RetrievalTask"
+        freshness:
+          type: string
+          enum: [24h, 7d, 30d, 1y]
+        maxCostUsd:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1000
+        maxLatencyMs:
+          type: integer
+          minimum: 250
+          maximum: 120000
+          default: 10000
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 8
+        country:
+          type: string
+          pattern: "^[A-Za-z]{2}$"
+        language:
+          type: string
+          pattern: "^[a-z]{2,3}(?:-[a-z0-9]{2,8})?$"
+        includeDomains:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: "#/components/schemas/Hostname"
+        excludeDomains:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items:
+            $ref: "#/components/schemas/Hostname"
+        providerAllowlist:
+          type: array
+          minItems: 1
+          maxItems: 10
+          items:
+            type: string
+            minLength: 1
+            maxLength: 64
+        fetchContent:
+          type: boolean
+          default: false
+      not:
+        properties:
+          includeDomains: {}
+          excludeDomains: {}
+        required: [includeDomains, excludeDomains]
+    RetrievalPriority:
+      type: string
+      enum: [balanced, quality, cost, latency]
+      default: balanced
+    RetrievalTask:
+      type: string
+      enum: [balanced, fresh_facts, deep_research, page_content]
+      default: balanced
+    Hostname:
+      type: string
+      pattern: "^(?:\\*\\.)?(?=.{1,253}$)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$"
+    RoutePreviewEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: object
+          additionalProperties: false
+          required: [candidates]
+          properties:
+            candidates:
+              type: array
+              items:
+                $ref: "#/components/schemas/RouteCandidate"
+    RouteCandidate:
+      type: object
+      additionalProperties: false
+      required:
+        - providerId
+        - estimatedCostUsd
+        - estimatedLatencyMs
+        - totalScore
+        - components
+        - reasonCodes
+      properties:
+        providerId:
+          type: string
+        estimatedCostUsd:
+          type: [number, "null"]
+          minimum: 0
+        estimatedLatencyMs:
+          type: number
+          minimum: 0
+        totalScore:
+          type: number
+          minimum: 0
+          maximum: 1
+        components:
+          $ref: "#/components/schemas/RouteScoreComponents"
+        reasonCodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/RouteReasonCode"
+    RouteScoreComponents:
+      type: object
+      additionalProperties: false
+      required: [quality, reliability, cost, latency]
+      properties:
+        quality:
+          type: number
+          minimum: 0
+          maximum: 1
+        reliability:
+          type: number
+          minimum: 0
+          maximum: 1
+        cost:
+          type: number
+          minimum: 0
+          maximum: 1
+        latency:
+          type: number
+          minimum: 0
+          maximum: 1
+    SearchEnvelope:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          $ref: "#/components/schemas/SearchResponse"
+    SearchResponse:
+      type: object
+      additionalProperties: false
+      required: [results, route]
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/NormalizedSearchResult"
+        route:
+          $ref: "#/components/schemas/RouteReceipt"
+    NormalizedSearchResult:
+      type: object
+      additionalProperties: false
+      required: [title, url, provider, rank]
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        url:
+          type: string
+          format: uri
+          pattern: "^https?://"
+        snippet:
+          type: string
+          minLength: 1
+          maxLength: 20000
+        publishedAt:
+          type: string
+          format: date-time
+        author:
+          type: string
+          minLength: 1
+          maxLength: 500
+        provider:
+          type: string
+          minLength: 1
+          maxLength: 64
+        rank:
+          type: integer
+          minimum: 1
+        providerScore:
+          type: number
+        metadata:
+          type: object
+          additionalProperties: true
+    RouteReceipt:
+      type: object
+      additionalProperties: false
+      required:
+        - selectedProvider
+        - attemptedProviders
+        - attempts
+        - reasonCodes
+        - estimatedCostUsd
+        - latencyMs
+        - fallbackUsed
+        - traceId
+      properties:
+        selectedProvider:
+          type: string
+          minLength: 1
+          maxLength: 64
+        attemptedProviders:
+          type: array
+          minItems: 1
+          items:
+            type: string
+        attempts:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/RouteAttempt"
+        reasonCodes:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/RouteReasonCode"
+        estimatedCostUsd:
+          type: [number, "null"]
+          minimum: 0
+        latencyMs:
+          type: number
+          minimum: 0
+        fallbackUsed:
+          type: boolean
+        traceId:
+          type: string
+          minLength: 1
+          maxLength: 128
+    RouteAttempt:
+      type: object
+      additionalProperties: false
+      required:
+        - provider
+        - startedAt
+        - endedAt
+        - latencyMs
+        - estimatedCostUsd
+        - outcome
+      properties:
+        provider:
+          type: string
+          minLength: 1
+          maxLength: 64
+        startedAt:
+          type: string
+          format: date-time
+        endedAt:
+          type: string
+          format: date-time
+        latencyMs:
+          type: number
+          minimum: 0
+        estimatedCostUsd:
+          type: [number, "null"]
+          minimum: 0
+        outcome:
+          type: string
+          enum: [success, retryable_error, terminal_error]
+        errorCode:
+          type: string
+          minLength: 1
+          maxLength: 64
+    RouteReasonCode:
+      type: string
+      enum:
+        - TASK_MATCH
+        - QUALITY_PRIORITY
+        - COST_PRIORITY
+        - LATENCY_PRIORITY
+        - BALANCED_PRIORITY
+        - RELIABILITY_WEIGHT
+        - WITHIN_BUDGET
+        - ONLY_ELIGIBLE_PROVIDER
+        - FALLBACK_AFTER_RETRYABLE_ERROR
+    ErrorEnvelope:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            traceId:
+              type: string
+            details:
+              oneOf:
+                - type: object
+                  additionalProperties: true
+                - type: array
+                  items:
+                    $ref: "#/components/schemas/ValidationIssue"
+    ValidationIssue:
+      type: object
+      additionalProperties: false
+      required: [field, message]
+      properties:
+        field:
+          type: string
+        message:
+          type: string

@@ -1,0 +1,16 @@
+.git
+.github
+.worktrees
+.playwright-cli
+node_modules
+**/dist
+coverage
+output
+benchmarks/results
+.env
+.env.*
+!.env.example
+*.log
+docs
+Dockerfile*
+docker-compose*.yml
