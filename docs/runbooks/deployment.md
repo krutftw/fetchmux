@@ -43,15 +43,27 @@ not present in route events.
 
 ## Build the container
 
-The Dockerfile pins an official Node 24 Bookworm slim tag, compiles in a separate build stage, prunes
-development dependencies, and runs as the upstream non-root `node` user.
+The Dockerfile pins both an official Node 24 Bookworm slim build image and the supported Distroless
+Node 24 Debian 13 `nonroot` runtime by digest, then copies only gateway, core, provider, and
+production dependency artifacts into that runtime. The final image has no shell or package manager.
+This follows the official
+[Distroless Node pattern](https://github.com/GoogleContainerTools/distroless/tree/main/examples/nodejs)
+and keeps the runtime package surface separate from build tooling.
 
 ```powershell
 docker build --tag fetchmux:founding .
 docker image inspect fetchmux:founding --format '{{.Config.User}}'
+docker scout cves --exit-code local://fetchmux:founding
 ```
 
-Expected image user: `node`.
+Expected image user: `nonroot`. Treat any Docker Scout finding as a deployment gate: verify the
+current upstream digests, update the pinned build image or supported Distroless runtime, and rebuild
+before release. Distroless images are updated from Debian security releases, but the scan result is
+still time-specific and must be rerun for every release.
+
+Because the runtime is shell-free, use container logs and health endpoints for diagnosis. If an
+interactive shell is essential during local incident analysis, rebuild a temporary image from the
+matching Distroless `debug-nonroot` tag; never publish or promote that debug image.
 
 ## Start with Compose
 

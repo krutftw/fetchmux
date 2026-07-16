@@ -193,8 +193,10 @@ Invoke-RestMethod http://127.0.0.1:8787/health
 docker compose logs --follow gateway
 ```
 
-The runtime image uses the upstream Node `node` user, drops Linux capabilities in Compose, supports
-a read-only root filesystem, and receives provider credentials only at container start.
+The build and runtime image digests pin the official Node 24 build image and supported Distroless
+Node 24 Debian 13 `nonroot` runtime. The image includes production dependencies only for the gateway
+and its two internal packages, drops Linux capabilities in Compose, supports a read-only root
+filesystem, and receives provider credentials only at container start.
 
 ## Development commands
 

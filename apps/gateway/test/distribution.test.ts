@@ -1,4 +1,5 @@
 import { type ChildProcessByStdio, spawn, spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { createServer } from "node:net";
 import { resolve } from "node:path";
 import type { Readable } from "node:stream";
@@ -25,6 +26,26 @@ afterEach(async () => {
 });
 
 describe("built gateway distribution", () => {
+  it("keeps the runtime image minimal and non-root", () => {
+    const dockerfile = readFileSync(resolve(repositoryRoot, "Dockerfile"), "utf8");
+    const normalizedDockerfile = dockerfile.replace(/\\\s*/g, " ").replace(/\s+/g, " ");
+
+    expect(dockerfile).toMatch(
+      /FROM node:\$\{NODE_VERSION\}-bookworm-slim@sha256:[a-f0-9]{64} AS build/,
+    );
+    expect(dockerfile).toMatch(
+      /FROM gcr\.io\/distroless\/nodejs24-debian13:nonroot@sha256:[a-f0-9]{64} AS runtime/,
+    );
+    expect(normalizedDockerfile).toContain(
+      "--workspace @fetchmux/gateway --workspace @fetchmux/core --workspace @fetchmux/providers",
+    );
+    expect(dockerfile).toContain(
+      'CMD ["/nodejs/bin/node", "-e", "fetch(\'http://127.0.0.1:8787/health\')',
+    );
+    expect(dockerfile).toContain('CMD ["apps/gateway/dist/main.js"]');
+    expect(dockerfile).not.toMatch(/FROM node:\$\{NODE_VERSION\}-bookworm-slim AS runtime/);
+  });
+
   it("starts the compiled artifact and exposes health without configured providers", async () => {
     const gateway = await startGateway({ FETCHMUX_AUTH_DISABLED: "true" });
 
