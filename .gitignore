@@ -5,6 +5,8 @@ dist/
 coverage/
 output/
 benchmarks/results/
+gl-*-report.json
+gl-sbom*.json*
 .env
 .env.*
 !.env.example

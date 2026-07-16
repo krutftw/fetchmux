@@ -6,6 +6,7 @@ include:
 
 workflow:
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
     - when: never
@@ -17,11 +18,13 @@ stages:
 
 variables:
   AST_ENABLE_MR_PIPELINES: "true"
+  FETCHMUX_EXPECT_ULTIMATE_SECURITY: "true"
   GITLAB_ADVANCED_SAST_ENABLED: "true"
   DS_MAX_DEPTH: "1"
 
 .project_pipeline_rules:
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
 
@@ -52,6 +55,8 @@ verify:
   artifacts:
     when: always
     expire_in: 7 days
+    paths:
+      - scripts/ci/security-gate.mjs
     reports:
       junit: output/ci/junit.xml
 
@@ -84,6 +89,29 @@ secret_detection:
   variables:
     SECRET_DETECTION_HISTORIC_SCAN: "true"
 
+gitlab-advanced-sast:
+  after_script:
+    - if [ -f gl-sast-report.json ]; then cp gl-sast-report.json gl-sast-advanced-report.json; fi
+  variables:
+    AFTER_SCRIPT_IGNORE_ERRORS: "false"
+  artifacts:
+    when: always
+    paths:
+      - gl-sast-report.json
+      - gl-sast-advanced-report.json
+      - ts-cache.sqlite.gz
+
+semgrep-sast:
+  after_script:
+    - if [ -f gl-sast-report.json ]; then cp gl-sast-report.json gl-sast-semgrep-report.json; fi
+  variables:
+    AFTER_SCRIPT_IGNORE_ERRORS: "false"
+  artifacts:
+    when: always
+    paths:
+      - gl-sast-report.json
+      - gl-sast-semgrep-report.json
+
 container_scanning:
   extends: .project_pipeline_rules
   needs:
@@ -101,7 +129,11 @@ security_gate:
   image: node:24.18.0-bookworm-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d
   stage: security
   interruptible: true
+  variables:
+    GIT_STRATEGY: none
   needs:
+    - job: verify
+      artifacts: true
     - job: gitlab-advanced-sast
       artifacts: true
       optional: true
