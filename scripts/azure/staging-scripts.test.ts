@@ -18,6 +18,8 @@ describe("Azure staging operations contract", () => {
     expect(deploy).toContain("if (-not $Apply)");
     expect(deploy).toContain("deployment sub what-if");
     expect(deploy).toContain("deployment group what-if");
+    expect(deploy).toContain(") + $platformParameters)");
+    expect(deploy).not.toMatch(/-AzArguments @\([\s\S]{0,500}\)\s+\+\s+\$platformParameters/);
   });
 
   it("deploys only a clean exact Git commit", () => {

@@ -285,7 +285,7 @@ $platformParameters = @(
   "deployerObjectId=$deployerObjectId"
 )
 Write-Host 'Running: az deployment sub what-if'
-Invoke-AzPassThru -AzArguments @(
+Invoke-AzPassThru -AzArguments (@(
   'deployment',
   'sub',
   'what-if',
@@ -296,7 +296,7 @@ Invoke-AzPassThru -AzArguments @(
   '--template-file',
   $mainTemplate,
   '--parameters'
-) + $platformParameters
+) + $platformParameters)
 
 if (-not $Apply) {
   [pscustomobject]@{
