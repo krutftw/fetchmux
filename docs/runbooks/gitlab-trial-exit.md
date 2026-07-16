@@ -1,5 +1,9 @@
 # GitLab Ultimate trial exit
 
+> Historical procedure. The GitLab account is blocked as of 2026-07-17 and GitLab is not the
+> current primary forge. Use the [forge continuity runbook](forge-continuity.md) for the live Azure
+> DevOps and GitHub topology. Resume this procedure only if GitLab restores access.
+
 This runbook prevents the private founding build from depending on a temporary GitLab Ultimate
 entitlement. It does not authorize a subscription, payment method, or paid feature purchase.
 

@@ -7,10 +7,12 @@
 ## Release decision
 
 All applicable local product, protocol, browser, security, documentation, benchmark-dry-run, and
-container gates pass. GitLab merge-request pipeline `2681778061` and scheduled smoke pipeline
-`2681778549` each passed the locked application gate and all configured security jobs. Keep GitLab
-merge request `!1` private and in draft while live-provider, legal, and owner-identity actions remain
-unresolved. GitHub remains a private backup, not the authoritative CI system.
+container gates pass. Azure Pipelines build `20260716.1` passed the current locked application,
+secret, and container gates on commit `de532791b3596ab463c9414bcf1988f9a700abb5` in 153 seconds.
+Azure DevOps is the current private continuity forge; keep Azure draft pull request `#1` in draft
+while live-provider, legal, and owner-identity actions remain unresolved. GitHub is a private backup.
+The GitLab account is blocked, so its earlier green pipeline evidence is historical rather than an
+available operating control.
 
 This checklist does not claim customers, revenue, provider partnerships, public benchmark results,
 or production multi-tenant readiness.
@@ -42,7 +44,8 @@ Run from `C:\Users\Administrator\fetchmux\.worktrees\founding-build`:
 | Production build | All TypeScript projects and the Vite site built successfully |
 | Site bundle | 209.21 kB JavaScript (65.27 kB gzip) and 26.91 kB CSS (8.34 kB gzip) |
 | OpenAPI | Redocly validation passed with 0 warnings |
-| GitLab CI | Server-side CI lint passed with 0 errors and 0 warnings; MR pipeline `2681778061` passed all seven jobs in 172 seconds and scheduled pipeline `2681778549` passed all seven in 153 seconds |
+| Azure Pipelines | Build `20260716.1` passed all configured steps in 153 seconds on exact commit `de532791b3596ab463c9414bcf1988f9a700abb5` |
+| Historical GitLab CI | Server-side CI lint passed with 0 errors and 0 warnings; MR pipeline `2681778061` passed all seven jobs in 172 seconds and scheduled pipeline `2681778549` passed all seven in 153 seconds before the account was blocked |
 | YAML and workflow | YAML parsing, Actionlint, and Compose configuration passed |
 | Benchmark dry-run | 24 cases, 4 providers, 96 planned calls, 0 executed calls, 0 network calls |
 | Git hygiene | `git diff --check` passed |
@@ -76,8 +79,8 @@ Run from `C:\Users\Administrator\fetchmux\.worktrees\founding-build`:
 
 - [x] `npm audit --omit=dev` reported 0 vulnerabilities.
 - [x] Local Gitleaks scanned the entire committed history and the working tree and found no leaks.
-  GitLab pipeline secret detection independently reported 0 findings, and receiver-side secret push
-  protection is enabled for the project.
+  Azure build `20260716.1` independently downloaded a checksum-pinned Gitleaks 8.30.1 archive and
+  passed a full-history scan. GitLab's earlier pipeline secret detection also reported 0 findings.
 - [x] Every broad secret-pattern hit was classified as an empty environment field, documentation
   placeholder, code identifier/interpolation, dependency token name, or deliberate fake test value.
 - [x] The gateway uses timing-safe bearer comparison, a 64 KiB body limit, allowlist-only CORS,
@@ -91,35 +94,35 @@ Run from `C:\Users\Administrator\fetchmux\.worktrees\founding-build`:
   provider workspaces.
 - [x] The rebuilt image is approximately 57 MB with 78 indexed packages. Docker Scout reported zero
   critical, high, medium, or low vulnerabilities at verification time.
-- [x] GitLab container scanning used Trivy 0.72.0 and a different advisory source. It reported 12
-  Debian 13 runtime-layer findings: 5 medium and 7 low, with 0 critical and 0 high. The medium items
-  are `CVE-2026-27171` in `zlib1g` and `CVE-2026-5435`, `CVE-2026-5450`, `CVE-2026-5928`, and
-  `CVE-2026-6238` in `libc6`. Debian's tracker currently provides no stable Trixie fix and classifies
-  the reviewed items as minor or no-DSA. These findings are not suppressed or allowlisted.
-- [x] The required `security_gate` job reads uniquely named Advanced and standard SAST,
+- [x] Azure and the earlier GitLab container scans use Trivy's distribution-aware severity data.
+  Azure downloads checksum-pinned Trivy 0.72.0, reports all OS findings, and blocks unknown, high,
+  or critical results. Build `20260716.1` passed. The current Debian 13 layer has 12 visible findings:
+  5 medium and 7 low, with 0 critical and 0 high. The medium items are `CVE-2026-27171` in `zlib1g`
+  and `CVE-2026-5435`, `CVE-2026-5450`, `CVE-2026-5928`, and `CVE-2026-6238` in `libc6`. Debian's
+  tracker currently provides no stable Trixie fix and classifies the reviewed items as minor or
+  no-DSA. These findings are not suppressed or allowlisted.
+- [x] The historical GitLab `security_gate` job reads uniquely named Advanced and standard SAST,
   secret-detection, dependency-scanning, and container-scanning artifacts without checking out the
   repository. Any secret, medium-or-higher SAST finding, critical or high dependency/container
   finding, unknown severity, or missing, malformed, wrong-type, or failed required report blocks the
   pipeline. Medium and low dependency/container findings remain visible advisories.
-- [x] GitLab Ultimate trial features produced 0 Advanced SAST findings and 0 SBOM dependency
-  findings. While the trial is expected, their missing artifacts fail closed. Standard SAST, secret
-  detection, container scanning, and `npm audit --audit-level=high` form the non-Ultimate baseline;
-  the actual downgrade path still requires a pipeline verification before the trial ends.
+- [x] Historical GitLab Ultimate trial jobs produced 0 Advanced SAST findings and 0 SBOM dependency
+  findings. The current Azure baseline does not enable paid Advanced Security: checksum-pinned
+  full-history secret scanning, `npm audit --audit-level=high`, and the checksum-pinned Trivy
+  container gate are the durable free controls.
 - [x] Scanner thresholds have no generic bypass or blanket allowlist. Any future single-finding
   exception requires independent review, exact evidence, compensating controls, and a maximum
   30-day expiry under the [security exception runbook](../runbooks/security-exceptions.md).
-- [x] Active schedule `4344617` runs a complete security rescan at 06:00 every Monday in
-  `Australia/Perth`. Its first smoke attempt (`2681769549`) exposed GitLab analyzer suppression on a
-  branch with an open merge request. The schedule-specific workflow override was then added and
-  scheduled pipeline `2681778549` passed all seven jobs with 0 blocking and 12 advisory findings.
-  The schedule targets `feature/founding-build` until review and must be retargeted to `main` before
-  merge.
+- [x] The Azure YAML schedule runs the complete free security baseline at 06:00 every Monday in
+  `Australia/Perth` (`22:00` Sunday UTC). It targets `feature/founding-build` during review and must
+  be retargeted to `main` immediately before merge. Historical GitLab schedule `4344617` and its
+  green smoke run `2681778549` are retained as evidence but are no longer operational controls.
 - [x] The final container ran as UID/GID `65532:65532` (`nonroot`) with a read-only root filesystem,
   `/tmp` tmpfs, all capabilities dropped, and `no-new-privileges`. Health, readiness, authentication,
   healthcheck, shutdown, and log-leak checks passed.
 
 Container scanning is time-sensitive and databases can disagree. Rebuild from reviewed current
-digests and rerun both GitLab container scanning and Docker Scout for every release. The supported
+digests and rerun Azure's Trivy gate plus an independent scanner for every release. The supported
 Distroless runtime policy and image list are maintained in the
 [official Distroless repository](https://github.com/GoogleContainerTools/distroless).
 
@@ -132,8 +135,9 @@ Distroless runtime policy and image list are maintained in the
   have occurred yet.
 
 GitHub-hosted Actions still cannot create jobs because GitHub reports an account billing problem.
-This no longer blocks the private founding build because GitLab is the primary forge and its
-equivalent, expanded pipeline is green. GitHub remains a private backup only.
+GitLab currently returns `403 Forbidden - Your account has been blocked.` Neither blocks the private
+founding build because Azure Repos, Azure Pipelines, and Azure draft pull request `#1` are live, and
+GitHub retains an exact private backup.
 
 ## Intentionally deferred and owner-gated
 
@@ -157,13 +161,12 @@ equivalent, expanded pipeline is green. GitHub remains a private backup only.
 3. Provider terms can constrain result storage, benchmarking, disclosure, and resale. Complete the
    provider-by-provider legal checklist before live evaluation or publication.
 4. The FetchMux name remains provisional until trademark and domain clearance.
-5. The GitLab Ultimate trial is temporary. Before it ends, export the current reports, explicitly
-   set the Ultimate expectation to false, disable the Advanced SAST variable, verify the
-   standard-SAST fallback job and security gate on the resulting tier, and decide whether the paid
-   security dashboards justify their cost. Follow the [trial-exit
-   runbook](../runbooks/gitlab-trial-exit.md).
-6. Scheduled scan `4344617` currently targets the review branch. Retarget it to `main` immediately
-   before merging the founding merge request, then smoke-test the schedule again from the default
+5. The GitLab account is blocked. Preserve the verified offline bundle and historical reports, use
+   the factual support appeal, and do not restore GitLab as a dependency unless access and the
+   resulting tier are both verified. Follow the [forge continuity
+   runbook](../runbooks/forge-continuity.md).
+6. The Azure weekly schedule currently targets the review branch. Retarget it to `main` immediately
+   before merging the founding pull request, then smoke-test the schedule again from the default
    branch.
 7. Remote operation depends on the deployment runbook's external TLS, rate-limit, secret-management,
    monitoring, backup, and incident controls.
@@ -171,5 +174,5 @@ equivalent, expanded pipeline is green. GitHub remains a private backup only.
 ## Release posture
 
 The codebase and private operating package are verified for the founding stage. The correct next
-state is a private draft GitLab merge request with explicit blockers, not a public launch or
+state is private Azure draft pull request `#1` with explicit blockers, not a public launch or
 production claim.

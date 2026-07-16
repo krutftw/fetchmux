@@ -12,7 +12,7 @@ schedules:
     displayName: Weekly Monday 06:00 Australia/Perth security rescan
     branches:
       include:
-        - main
+        - feature/founding-build
     always: true
     batch: true
 
