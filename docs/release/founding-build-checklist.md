@@ -1,22 +1,22 @@
 # FetchMux founding-build release checklist
 
-**Verification date:** 2026-07-16 (Australia/Perth)  
-**Release posture:** private founding build, suitable for local or single-tenant evaluation  
-**Public-launch posture:** not approved, not published, and not represented as a live provider comparison
+- **Verification date:** 2026-07-17 (Australia/Perth)
+- **Release posture:** private founding build with operator-IP-restricted single-tenant Azure staging
+- **Public-launch posture:** not approved, not published, and not represented as a live provider comparison
 
 ## Release decision
 
 All applicable local product, protocol, browser, security, documentation, benchmark-dry-run, and
-container gates pass. Azure Pipelines build `20260716.1` passed the current locked application,
-secret, and container gates on commit `de532791b3596ab463c9414bcf1988f9a700abb5` in 153 seconds.
+container gates pass. Azure Pipelines build `20260716.3` passed the founding application, secret,
+and container gates on commit `345ba7f7e8d814f186504d23d55e8a6d0921d05c` in 112 seconds.
 Azure DevOps is the current private continuity forge; keep Azure draft pull request `#1` in draft
 while live-provider, legal, and owner-identity actions remain unresolved. GitHub is a private backup.
 The GitLab account is blocked, so its earlier green pipeline evidence is historical rather than an
 available operating control.
 
-The isolated `feature/azure-staging` branch now contains compiled Bicep, guarded deployment scripts,
-and an operations runbook. This is preparation evidence only until live Azure read-back succeeds;
-no staging endpoint is claimed by this paragraph.
+The isolated `feature/azure-staging` branch adds compiled Bicep, guarded deployment scripts, and an
+operations runbook. Azure read-back and four live HTTPS checks passed for the exact runtime source
+commit and manifest digest recorded below. This remains private staging, not production evidence.
 
 This checklist does not claim customers, revenue, provider partnerships, public benchmark results,
 or production multi-tenant readiness.
@@ -39,22 +39,42 @@ or production multi-tenant readiness.
 
 ## Fresh quality evidence
 
-Run from `C:\Users\Administrator\fetchmux\.worktrees\founding-build`:
+Run from `C:\Users\Administrator\fetchmux\.worktrees\azure-staging`:
 
 | Gate | Result |
 | --- | --- |
 | Locked install | `npm clean-install --ignore-scripts`: 267 packages installed, 275 audited, 0 vulnerabilities |
-| Test suite | 23 files passed, 187 tests passed, 0 failed |
+| Test suite | 25 files passed, 202 tests passed, 0 failed |
 | TypeScript | All solution, site, and test typechecks passed |
-| Biome | 86 files checked, 0 errors and 0 warnings |
+| Biome | 88 files checked, 0 errors and 0 warnings |
 | Production build | All TypeScript projects and the Vite site built successfully |
 | Site bundle | 209.21 kB JavaScript (65.27 kB gzip) and 26.91 kB CSS (8.34 kB gzip) |
 | OpenAPI | Redocly validation passed with 0 warnings |
-| Azure Pipelines | Build `20260716.1` passed all configured steps in 153 seconds on exact commit `de532791b3596ab463c9414bcf1988f9a700abb5` |
+| Founding Azure Pipelines | Build `20260716.3` passed all configured steps in 112 seconds on exact commit `345ba7f7e8d814f186504d23d55e8a6d0921d05c` |
 | Historical GitLab CI | Server-side CI lint passed with 0 errors and 0 warnings; MR pipeline `2681778061` passed all seven jobs in 172 seconds and scheduled pipeline `2681778549` passed all seven in 153 seconds before the account was blocked |
 | YAML and workflow | YAML parsing, Actionlint, and Compose configuration passed |
 | Benchmark dry-run | 24 cases, 4 providers, 96 planned calls, 0 executed calls, 0 network calls |
 | Git hygiene | `git diff --check` passed |
+
+## Azure staging evidence
+
+| Gate | Live read-back |
+| --- | --- |
+| Runtime source | `b58cde3fdfd0ecfb791a5263685b86b80ba5d541` |
+| Image | Full-commit ACR tag pinned to `sha256:94f0b2aec131d5bd20c3aa8d38578a9ccfe31c6d2efc55e3654a59abba0915f7` |
+| Revision | `ca-fetchmux-gateway-stg--0000001`, ready and `Running` |
+| Ingress | Managed HTTPS, insecure transport off, one operator IPv4 `/32` allow rule |
+| Identity | User-assigned identity with resource-scoped `AcrPull` and `Key Vault Secrets User` |
+| Secret | One unversioned Key Vault reference; no inline Container App secret value |
+| Scale | Consumption workload, `minReplicas=0`, `maxReplicas=1` |
+| HTTP | `200` health, `503` deliberate provider readiness, `401` without auth, `200` with auth |
+| Provider state | 0 available providers; no operator-owned provider credential configured |
+| Exact image scan | Trivy DB dated 2026-07-16: 7 low, 5 medium, 0 unknown/high/critical; 0 Node findings |
+| Initial log volume | 203 records and 97,869 billed bytes across console and system tables |
+
+The Azure Free Trial rejects ACR Tasks with `TasksOperationsNotAllowed`. The verified path builds
+locally, authenticates to the private registry with Microsoft Entra ID, pushes a full-commit tag,
+and deploys its manifest digest. No registry admin credential was enabled.
 
 ## REST and MCP evidence
 
@@ -152,6 +172,8 @@ GitHub retains an exact private backup.
 - [x] Subscription read-back reported the legacy Free Trial quota and `spendingLimit=On`.
 - [x] The first authorized use is bounded to private single-tenant staging in
   `rg-fetchmux-stg-aue`, with a Basic registry and Container Apps scale `0..1`.
+- [x] The live endpoint uses managed TLS and one operator IPv4 `/32`; registry admin access is off,
+  secrets remain in Key Vault, logs are allowlisted, and no provider key is configured.
 - [ ] Do not remove the spending limit, convert the subscription, purchase Marketplace products,
   add paid support, or raise the cost envelope without a new decision backed by current prices and
   remaining-credit evidence.
@@ -166,8 +188,6 @@ GitHub retains an exact private backup.
   terms, charge a card, or accept payment.
 - [ ] Build a hosted credential vault, multi-tenant control plane, pooled provider-credit product, or
   public provider league table.
-- [ ] Expose the gateway remotely without reviewed TLS termination, access restrictions, log
-  redaction, and network-level rate limiting.
 
 ## Residual risks and next evidence
 
@@ -191,6 +211,6 @@ GitHub retains an exact private backup.
 
 ## Release posture
 
-The codebase and private operating package are verified for the founding stage. The correct next
-state is private Azure draft pull request `#1` with explicit blockers, not a public launch or
-production claim.
+The codebase, private operating package, and IP-restricted single-tenant staging gateway are
+verified for the founding stage. The correct next state is private draft review with explicit
+provider and commercial blockers, not a public launch or production claim.

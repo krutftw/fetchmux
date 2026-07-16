@@ -24,7 +24,8 @@ What exists today:
 - protected REST, typed TypeScript SDK, and read-only MCP interfaces;
 - a 24-case reproducible benchmark workload with a zero-network dry run;
 - a browser-tested founding site and local container packaging;
-- reproducible Azure staging templates plus secret-safe deployment and read-back scripts.
+- a live, operator-IP-restricted Azure staging gateway deployed by reproducible templates and
+  secret-safe scripts, with zero provider keys enabled.
 
 What does not exist yet:
 

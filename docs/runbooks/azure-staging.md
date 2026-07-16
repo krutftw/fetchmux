@@ -3,7 +3,7 @@
 - **Environment:** private single-tenant staging
 - **Region:** Australia East
 - **Resource group:** `rg-fetchmux-stg-aue`
-- **Status:** infrastructure and deployment tooling verified locally; live apply pending
+- **Status:** live and independently verified on 2026-07-17; private staging only
 
 This environment proves that the founding gateway can run behind managed TLS with an exact image,
 managed-identity access, secret isolation, structured logs, and bounded scale. It is not a public
@@ -126,17 +126,30 @@ the gateway key.
 ## Logs
 
 The gateway emits allowlisted JSON without query text, result content, provider response bodies, or
-keys. Read the newest container records with:
+keys. Read current volume through the Log Analytics REST API without adding a CLI extension:
 
 ```powershell
 $workspaceId = az monitor log-analytics workspace show `
   --resource-group rg-fetchmux-stg-aue `
   --workspace-name log-fetchmux-stg-aue `
   --query customerId -o tsv
-
-az monitor log-analytics query `
-  --workspace $workspaceId `
-  --analytics-query "ContainerAppConsoleLogs_CL | where ContainerAppName_s == 'ca-fetchmux-gateway-stg' | project TimeGenerated, Log_s | order by TimeGenerated desc | take 100"
+$token = az account get-access-token `
+  --resource https://api.loganalytics.io `
+  --query accessToken -o tsv
+$headers = @{ Authorization = "Bearer $token" }
+try {
+  $body = @{
+    query = "union withsource=TableName isfuzzy=true ContainerAppConsoleLogs_CL, ContainerAppSystemLogs_CL | summarize Rows=count(), BilledBytes=sum(_BilledSize), First=min(TimeGenerated), Last=max(TimeGenerated)"
+  } | ConvertTo-Json
+  Invoke-RestMethod `
+    -Method Post `
+    -Uri "https://api.loganalytics.io/v1/workspaces/$workspaceId/query" `
+    -Headers $headers `
+    -ContentType 'application/json' `
+    -Body $body
+} finally {
+  Remove-Variable token, headers, body -ErrorAction SilentlyContinue
+}
 ```
 
 Do not raise the daily cap or retention merely to make troubleshooting more convenient. Export only
@@ -180,6 +193,31 @@ separate owner decision after any required log or evidence retention is complete
 
 ## Live evidence
 
-Pending. Do not replace this line with success until the exact deployed commit, ACR image, active
-revision, FQDN, ingress CIDR, RBAC assignments, resource SKUs, HTTP statuses, and verification time
-have all been read back from Azure.
+Verified at `2026-07-16T19:43:21.7100182Z` (`2026-07-17 03:43:21` Australia/Perth):
+
+| Evidence | Azure or runtime read-back |
+| --- | --- |
+| Runtime source commit | `b58cde3fdfd0ecfb791a5263685b86b80ba5d541` |
+| Registry tag | `fetchmux-gateway:b58cde3fdfd0ecfb791a5263685b86b80ba5d541` |
+| Deployed image | `fetchmuxjm432v7zktfge.azurecr.io/fetchmux-gateway@sha256:94f0b2aec131d5bd20c3aa8d38578a9ccfe31c6d2efc55e3654a59abba0915f7` |
+| Active revision | `ca-fetchmux-gateway-stg--0000001`, `Running` and ready |
+| Endpoint | `ca-fetchmux-gateway-stg.wittybush-a4f097a9.australiaeast.azurecontainerapps.io` |
+| Network | managed HTTPS, insecure transport off, one operator IPv4 `/32` allow rule |
+| Scale | `minReplicas=0`, `maxReplicas=1` |
+| Registry | `fetchmuxjm432v7zktfge`, Basic, admin and anonymous pull disabled |
+| Vault | `fmstgjm432v7zktfge`, Standard, RBAC, purge protection, unversioned secret reference |
+| Identity | `id-fetchmux-stg-aue`, `AcrPull` plus `Key Vault Secrets User` at resource scope |
+| HTTP | `/health` `200`; `/ready` `503`; protected route without key `401`; with key `200` |
+| Providers | `0` available; no Brave, Tavily, Exa, or Firecrawl key configured |
+| Container | Linux/amd64, `nonroot`, 57,116,930 local bytes, healthcheck present |
+| Trivy | 12 Debian findings: 7 low, 5 medium, 0 unknown, 0 high, 0 critical; 0 Node findings |
+
+ACR usage read-back was 57,123,431 bytes after both commit tags, showing layer deduplication. The
+first nine minutes of Container Apps logs contained 203 records and 97,869 billed bytes, roughly
+`0.000098` GB. This is far below the `0.05` GB daily cap. Cost Management still does not return
+actual spend for this legacy Free Trial offer, so no zero-cost claim is made.
+
+The managed ACR build endpoint returned `TasksOperationsNotAllowed`; the successful local build,
+Entra-authenticated push, digest pin, and HTTPS verification are the operating path for this
+subscription. The endpoint is not a public product: traffic outside the current operator `/32` is
+denied, the site is not deployed, and no provider is ready.
