@@ -7,8 +7,10 @@
 ## Release decision
 
 All applicable local product, protocol, browser, security, documentation, benchmark-dry-run, and
-container gates pass. Keep the GitHub pull request private and in draft while account CI, live
-provider, legal, and owner-identity actions remain unresolved.
+container gates pass. GitLab merge-request pipeline `2681778061` and scheduled smoke pipeline
+`2681778549` each passed the locked application gate and all configured security jobs. Keep GitLab
+merge request `!1` private and in draft while live-provider, legal, and owner-identity actions remain
+unresolved. GitHub remains a private backup, not the authoritative CI system.
 
 This checklist does not claim customers, revenue, provider partnerships, public benchmark results,
 or production multi-tenant readiness.
@@ -33,14 +35,15 @@ Run from `C:\Users\Administrator\fetchmux\.worktrees\founding-build`:
 
 | Gate | Result |
 | --- | --- |
-| Locked install | `npm clean-install --ignore-scripts`: 266 packages installed, 274 audited, 0 vulnerabilities |
-| Test suite | 22 files passed, 171 tests passed, 0 failed |
+| Locked install | `npm clean-install --ignore-scripts`: 267 packages installed, 275 audited, 0 vulnerabilities |
+| Test suite | 23 files passed, 187 tests passed, 0 failed |
 | TypeScript | All solution, site, and test typechecks passed |
-| Biome | 84 files checked, 0 errors and 0 warnings after the release fix |
+| Biome | 86 files checked, 0 errors and 0 warnings |
 | Production build | All TypeScript projects and the Vite site built successfully |
 | Site bundle | 209.21 kB JavaScript (65.27 kB gzip) and 26.91 kB CSS (8.34 kB gzip) |
 | OpenAPI | Redocly validation passed with 0 warnings |
-| YAML and workflow | Four YAML files parsed; Actionlint and Compose configuration passed |
+| GitLab CI | Server-side CI lint passed with 0 errors and 0 warnings; MR pipeline `2681778061` passed all seven jobs in 172 seconds and scheduled pipeline `2681778549` passed all seven in 153 seconds |
+| YAML and workflow | YAML parsing, Actionlint, and Compose configuration passed |
 | Benchmark dry-run | 24 cases, 4 providers, 96 planned calls, 0 executed calls, 0 network calls |
 | Git hygiene | `git diff --check` passed |
 
@@ -72,7 +75,9 @@ Run from `C:\Users\Administrator\fetchmux\.worktrees\founding-build`:
 ## Security and artifact evidence
 
 - [x] `npm audit --omit=dev` reported 0 vulnerabilities.
-- [x] Gitleaks scanned 13 commits and the working tree and found no leaks.
+- [x] Local Gitleaks scanned the entire committed history and the working tree and found no leaks.
+  GitLab pipeline secret detection independently reported 0 findings, and receiver-side secret push
+  protection is enabled for the project.
 - [x] Every broad secret-pattern hit was classified as an empty environment field, documentation
   placeholder, code identifier/interpolation, dependency token name, or deliberate fake test value.
 - [x] The gateway uses timing-safe bearer comparison, a 64 KiB body limit, allowlist-only CORS,
@@ -84,26 +89,51 @@ Run from `C:\Users\Administrator\fetchmux\.worktrees\founding-build`:
   one critical finding, and four high findings. The runtime was replaced with digest-pinned
   Distroless Node 24 Debian 13, and production installation was narrowed to gateway, core, and
   provider workspaces.
-- [x] The rebuilt image is 57,116,530 bytes with 78 indexed packages. Docker Scout reported zero
+- [x] The rebuilt image is approximately 57 MB with 78 indexed packages. Docker Scout reported zero
   critical, high, medium, or low vulnerabilities at verification time.
+- [x] GitLab container scanning used Trivy 0.72.0 and a different advisory source. It reported 12
+  Debian 13 runtime-layer findings: 5 medium and 7 low, with 0 critical and 0 high. The medium items
+  are `CVE-2026-27171` in `zlib1g` and `CVE-2026-5435`, `CVE-2026-5450`, `CVE-2026-5928`, and
+  `CVE-2026-6238` in `libc6`. Debian's tracker currently provides no stable Trixie fix and classifies
+  the reviewed items as minor or no-DSA. These findings are not suppressed or allowlisted.
+- [x] The required `security_gate` job reads uniquely named Advanced and standard SAST,
+  secret-detection, dependency-scanning, and container-scanning artifacts without checking out the
+  repository. Any secret, medium-or-higher SAST finding, critical or high dependency/container
+  finding, unknown severity, or missing, malformed, wrong-type, or failed required report blocks the
+  pipeline. Medium and low dependency/container findings remain visible advisories.
+- [x] GitLab Ultimate trial features produced 0 Advanced SAST findings and 0 SBOM dependency
+  findings. While the trial is expected, their missing artifacts fail closed. Standard SAST, secret
+  detection, container scanning, and `npm audit --audit-level=high` form the non-Ultimate baseline;
+  the actual downgrade path still requires a pipeline verification before the trial ends.
+- [x] Scanner thresholds have no generic bypass or blanket allowlist. Any future single-finding
+  exception requires independent review, exact evidence, compensating controls, and a maximum
+  30-day expiry under the [security exception runbook](../runbooks/security-exceptions.md).
+- [x] Active schedule `4344617` runs a complete security rescan at 06:00 every Monday in
+  `Australia/Perth`. Its first smoke attempt (`2681769549`) exposed GitLab analyzer suppression on a
+  branch with an open merge request. The schedule-specific workflow override was then added and
+  scheduled pipeline `2681778549` passed all seven jobs with 0 blocking and 12 advisory findings.
+  The schedule targets `feature/founding-build` until review and must be retargeted to `main` before
+  merge.
 - [x] The final container ran as UID/GID `65532:65532` (`nonroot`) with a read-only root filesystem,
   `/tmp` tmpfs, all capabilities dropped, and `no-new-privileges`. Health, readiness, authentication,
   healthcheck, shutdown, and log-leak checks passed.
 
-Container scanning is time-sensitive. Rebuild from reviewed current digests and rerun Docker Scout
-for every release. The supported Distroless runtime policy and image list are maintained in the
+Container scanning is time-sensitive and databases can disagree. Rebuild from reviewed current
+digests and rerun both GitLab container scanning and Docker Scout for every release. The supported
+Distroless runtime policy and image list are maintained in the
 [official Distroless repository](https://github.com/GoogleContainerTools/distroless).
 
 ## Externally blocked
 
-- [ ] GitHub-hosted Actions execution. GitHub reports an account billing problem before any job is
-  created. The workflow passes Actionlint locally, but a hosted green run cannot be claimed until the
-  owner resolves billing and reruns the workflow.
 - [ ] Live provider benchmark. No owner-supplied provider credentials or verified customer plan cost
   profiles are configured, and no permission decision has been made for comparative disclosure.
   This is blocked, not failed and not completed.
 - [ ] Real demand proof. No qualified discovery calls, paid pilots, or customer outcome measurements
   have occurred yet.
+
+GitHub-hosted Actions still cannot create jobs because GitHub reports an account billing problem.
+This no longer blocks the private founding build because GitLab is the primary forge and its
+equivalent, expanded pipeline is green. GitHub remains a private backup only.
 
 ## Intentionally deferred and owner-gated
 
@@ -127,10 +157,19 @@ for every release. The supported Distroless runtime policy and image list are ma
 3. Provider terms can constrain result storage, benchmarking, disclosure, and resale. Complete the
    provider-by-provider legal checklist before live evaluation or publication.
 4. The FetchMux name remains provisional until trademark and domain clearance.
-5. Remote operation depends on the deployment runbook's external TLS, rate-limit, secret-management,
+5. The GitLab Ultimate trial is temporary. Before it ends, export the current reports, explicitly
+   set the Ultimate expectation to false, disable the Advanced SAST variable, verify the
+   standard-SAST fallback job and security gate on the resulting tier, and decide whether the paid
+   security dashboards justify their cost. Follow the [trial-exit
+   runbook](../runbooks/gitlab-trial-exit.md).
+6. Scheduled scan `4344617` currently targets the review branch. Retarget it to `main` immediately
+   before merging the founding merge request, then smoke-test the schedule again from the default
+   branch.
+7. Remote operation depends on the deployment runbook's external TLS, rate-limit, secret-management,
    monitoring, backup, and incident controls.
 
 ## Release posture
 
 The codebase and private operating package are verified for the founding stage. The correct next
-state is a private draft pull request with explicit blockers, not a public launch or production claim.
+state is a private draft GitLab merge request with explicit blockers, not a public launch or
+production claim.
