@@ -37,7 +37,7 @@ Australia East retail API snapshot on 2026-07-17:
 | --- | ---: |
 | Basic registry unit | `0.2414` per day, about `7.34` per 30.4-day month |
 | Registry storage | `0.1449` per GB-month |
-| ACR task vCPU duration | `0.0001` per second |
+| ACR task vCPU duration | `0.0001` per second; not used because this subscription rejects ACR Tasks |
 | Key Vault Standard operations | `0.0435` per 10,000 operations |
 | Analytics Logs ingestion | `4.8402` per GB |
 
@@ -92,12 +92,15 @@ The script then performs this sequence:
 2. show subscription-level `what-if` and deploy the durable platform;
 3. create the gateway key through Key Vault's HTTPS data-plane API without a file or CLI value
    argument;
-4. build `fetchmux-gateway:<full-git-sha>` in ACR;
+4. build `fetchmux-gateway:<full-git-sha>` with the local Docker engine, authenticate to ACR through
+   Microsoft Entra ID, push the tag, and resolve its registry digest;
 5. show resource-group `what-if` and deploy the app;
 6. run secret-safe Azure and HTTPS read-back.
 
-The image tag is the complete Git commit. The scripts never deploy `latest` or a mutable
-environment tag.
+The image tag is the complete Git commit, and the Container App is pinned to the resulting
+`sha256` manifest digest. The scripts never deploy `latest` or a mutable environment tag. Azure
+returned `TasksOperationsNotAllowed` for managed ACR builds on this Free Trial subscription, so the
+local build-and-push path avoids both that unsupported feature and its task-duration charge.
 
 ## Verify independently
 
@@ -112,7 +115,7 @@ The command must confirm:
 - one unversioned Key Vault reference and no direct Container App secret value;
 - TLS-only ingress with one IPv4 `/32` allow rule;
 - scale from zero to one;
-- the exact full-commit image;
+- the exact full-commit registry tag resolved to the digest used by the app;
 - HTTP `200` for `/health`, `503` for `/ready`, `401` for unauthenticated `/v1/providers`, and
   `200` for authenticated `/v1/providers`;
 - zero available providers until separately approved credentials exist.

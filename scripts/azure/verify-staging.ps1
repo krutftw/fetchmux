@@ -136,7 +136,17 @@ if ([string]::IsNullOrWhiteSpace($ExpectedImage)) {
   if ($LASTEXITCODE -ne 0) {
     throw 'The expected image could not be derived from Git.'
   }
-  $ExpectedImage = "$($registry.loginServer)/fetchmux-gateway:$gitSha"
+  $manifest = Invoke-AzJson -AzArguments @(
+    'acr',
+    'repository',
+    'show',
+    '--name',
+    [string]$registry.name,
+    '--image',
+    "fetchmux-gateway:$gitSha"
+  )
+  Assert-True ($manifest.digest -match '^sha256:[0-9a-f]{64}$') 'The exact commit tag has no valid registry digest.'
+  $ExpectedImage = "$($registry.loginServer)/fetchmux-gateway@$($manifest.digest)"
 }
 Assert-True ($container.image -eq $ExpectedImage) 'The running image does not match the expected exact Git commit tag.'
 

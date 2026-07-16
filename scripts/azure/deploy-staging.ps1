@@ -18,6 +18,7 @@ $appTemplate = Join-Path $repoRoot 'infra\azure\app.bicep'
 $verifyScript = Join-Path $PSScriptRoot 'verify-staging.ps1'
 $script:AzCommand = (Get-Command az -ErrorAction Stop).Source
 $script:GitCommand = (Get-Command git -ErrorAction Stop).Source
+$script:DockerCommand = $null
 
 function Invoke-AzText {
   param([Parameter(Mandatory)][string[]]$AzArguments)
@@ -357,21 +358,51 @@ if ($armAuthentication.status -ne 'enabled') {
 }
 
 $imageTag = "fetchmux-gateway:$gitSha"
-$imageReference = "$registryLoginServer/$imageTag"
-Write-Host "Building exact commit $gitSha in Azure Container Registry."
+$taggedImageReference = "$registryLoginServer/$imageTag"
+$script:DockerCommand = (Get-Command docker -ErrorAction Stop).Source
+& $script:DockerCommand version --format '{{.Server.Version}}' 1>$null
+if ($LASTEXITCODE -ne 0) {
+  throw 'A running local Docker engine is required because this subscription disallows ACR Tasks.'
+}
+
+Write-Host "Building exact commit $gitSha with the local Docker engine."
+& $script:DockerCommand build `
+  --platform linux/amd64 `
+  --file (Join-Path $repoRoot 'Dockerfile') `
+  --tag $taggedImageReference `
+  $repoRoot
+if ($LASTEXITCODE -ne 0) {
+  throw 'The local staging image build failed.'
+}
+
 Invoke-AzPassThru -AzArguments @(
   'acr',
-  'build',
-  '--registry',
+  'login',
+  '--name',
+  $registryName,
+  '--output',
+  'none'
+)
+& $script:DockerCommand push $taggedImageReference
+if ($LASTEXITCODE -ne 0) {
+  throw 'The exact staging image could not be pushed to the private registry.'
+}
+
+$manifest = Invoke-AzJson -AzArguments @(
+  'acr',
+  'repository',
+  'show',
+  '--name',
   $registryName,
   '--image',
-  $imageTag,
-  '--file',
-  (Join-Path $repoRoot 'Dockerfile'),
-  '--platform',
-  'linux/amd64',
-  $repoRoot
+  $imageTag
 )
+$imageDigest = [string]$manifest.digest
+if ($imageDigest -notmatch '^sha256:[0-9a-f]{64}$') {
+  throw 'The pushed image did not return a valid sha256 manifest digest.'
+}
+$imageReference = "$registryLoginServer/fetchmux-gateway@$imageDigest"
+Write-Host "Pushed the exact commit tag and pinned deployment to digest $imageDigest."
 
 $appParameters = @(
   "image=$imageReference",
@@ -426,6 +457,8 @@ if ($LASTEXITCODE -ne 0) {
   fqdn = [string]$appDeployment.properties.outputs.fqdn.value
   revision = [string]$appDeployment.properties.outputs.latestRevisionName.value
   image = $imageReference
+  imageTag = $taggedImageReference
+  imageDigest = $imageDigest
   gitSha = $gitSha
   operatorCidr = $resolvedOperatorCidr
 } | ConvertTo-Json -Depth 4

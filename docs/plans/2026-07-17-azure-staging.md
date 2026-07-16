@@ -10,6 +10,12 @@
 
 ---
 
+**Execution note:** Azure created the platform but rejected `az acr build` with
+`TasksOperationsNotAllowed` for this Free Trial subscription. The implemented path therefore uses
+the local Docker engine, Microsoft Entra-authenticated `az acr login`, an exact full-commit tag, and
+the pushed manifest digest. The Container App is pinned to that digest. This costs less and retains
+the same source-to-image traceability.
+
 ### Task 1: Lock the infrastructure security contract in tests
 
 **Files:**
@@ -152,7 +158,8 @@ the public IPv4 address as a `/32`, validate all Bicep files, and show subscript
 
 Generate a 32-byte random gateway key only when the vault secret does not exist. Pipe secret-setting
 output to null and clear the variable in `finally`. Build `fetchmux-gateway:<full-git-sha>` with
-`az acr build`, then deploy `app.bicep` with that immutable tag.
+the local Docker engine, push through Entra-authenticated ACR access, resolve the manifest digest,
+then deploy `app.bicep` with that immutable digest.
 
 **Step 2: Implement secret-safe read-back**
 
@@ -252,4 +259,3 @@ git commit -m "docs: record verified Azure staging"
 Push `feature/azure-staging` to Azure and GitHub. Create a private Azure draft PR targeting
 `feature/founding-build`; keep GitHub as the private backup. Do not merge, mark ready, publish the
 site, add provider keys, or claim production status.
-

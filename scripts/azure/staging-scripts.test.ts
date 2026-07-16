@@ -29,6 +29,16 @@ describe("Azure staging operations contract", () => {
     expect(deploy).not.toMatch(/fetchmux-gateway:(latest|staging)/i);
   });
 
+  it("builds locally when the subscription disallows ACR Tasks", () => {
+    expect(deploy).toContain("Get-Command docker");
+    expect(deploy).toContain("& $script:DockerCommand build");
+    expect(deploy).toContain("& $script:DockerCommand push");
+    expect(deploy).toMatch(/'acr',[\s\S]{0,80}'login'/);
+    expect(deploy).not.toMatch(/'acr',[\s\S]{0,80}'build'/);
+    expect(deploy).toContain("fetchmux-gateway@$imageDigest");
+    expect(verify).toMatch(/'acr',[\s\S]{0,160}'repository',[\s\S]{0,160}'show'/);
+  });
+
   it("registers only the approved resource providers", () => {
     for (const provider of [
       "Microsoft.App",
