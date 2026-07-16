@@ -15,6 +15,7 @@ stages:
   - test
 
 variables:
+  AST_ENABLE_MR_PIPELINES: "true"
   GITLAB_ADVANCED_SAST_ENABLED: "true"
   DS_MAX_DEPTH: "1"
 
