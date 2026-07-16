@@ -23,14 +23,17 @@ What exists today:
 - BYOK adapters for Brave, Tavily, Exa, and Firecrawl;
 - protected REST, typed TypeScript SDK, and read-only MCP interfaces;
 - a 24-case reproducible benchmark workload with a zero-network dry run;
-- a browser-tested founding site and local container packaging.
+- a browser-tested founding site and local container packaging;
+- a live, operator-IP-restricted Azure staging gateway deployed by reproducible templates and
+  secret-safe scripts, with zero provider keys enabled.
 
 What does not exist yet:
 
 - hosted multi-tenant credential storage;
 - provider credit resale or autonomous provider signup;
 - learned routing backed by customer outcomes;
-- a public package, public site, or completed live provider benchmark.
+- a production or public hosted service, public package, public site, or completed live provider
+  benchmark.
 
 ## Prerequisites
 
@@ -213,6 +216,7 @@ npm run dev:site
 
 - [Local development](docs/runbooks/local-development.md)
 - [Deployment](docs/runbooks/deployment.md)
+- [Azure staging](docs/runbooks/azure-staging.md)
 - [Provider configuration](docs/runbooks/provider-configuration.md)
 - [Incident response](docs/runbooks/incident-response.md)
 - [Data handling](docs/runbooks/data-handling.md)
