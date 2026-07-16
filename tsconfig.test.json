@@ -5,6 +5,7 @@
     "declaration": false,
     "declarationMap": false,
     "rootDir": ".",
+    "jsx": "react-jsx",
     "types": ["node", "vitest/globals"]
   },
   "include": [

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FetchMux">
+  <rect width="64" height="64" fill="#171711" />
+  <path d="M13 13h27v9H23v8h14v9H23v14H13V13Z" fill="#c8f43d" />
+  <path d="m43 48 9-32h7l-9 32h-7Z" fill="#f45b2a" />
+</svg>

@@ -1,7 +1,9 @@
 .worktrees/
+.playwright-cli/
 node_modules/
 dist/
 coverage/
+output/
 benchmarks/results/
 .env
 .env.*
