@@ -48,18 +48,23 @@ FetchMux will not subsidize usage to manufacture adoption.
 
 ## Acquisition loop
 
-The primary distribution asset is a continuously updated, reproducible retrieval benchmark.
+The primary acquisition motion is a manually qualified, paid retrieval reliability pilot. Public
+provider league tables are not a founding distribution asset: current provider terms can restrict
+performance disclosure, result retention, or benchmarking. Comparative publication requires
+provider-specific counsel review and any necessary written permission.
 
-1. Publish a useful provider comparison for named workload classes.
-2. Let developers run the same benchmark with their own keys and queries.
-3. Generate a shareable route report showing cost, latency, failures, and evidence differences.
-4. Offer a one-command SDK/MCP integration that applies the winning policy.
-5. Ask teams with recurring workloads to buy a monitored pilot.
-6. Feed consented aggregate outcomes back into the next benchmark release.
+1. Publish useful technical methodology about budgets, deadlines, fallback, and route evidence,
+   using fabricated examples or provider-approved facts.
+2. Let qualified teams run a private benchmark with their own keys, accepted terms, and workload.
+3. Establish one baseline metric before changing routing.
+4. Offer a one-command SDK/MCP integration that applies the agreed policy.
+5. Produce a private scorecard showing cost, latency, failures, and outcome evidence.
+6. Ask successful pilots to move to a recurring subscription and, with separate consent, provide a
+   case study that has passed provider, customer, and legal review.
 
 Secondary channels:
 
-- technical launch posts and provider-specific scorecards;
+- technical launch posts and provider-approved or provider-neutral scorecards;
 - GitHub examples and issue-driven integrations;
 - MCP directories and agent-framework templates;
 - provider partner directories after acceptance;
@@ -112,7 +117,8 @@ A retrieval is successful only when it completes inside declared latency and cos
 
 - Customer-paid provider usage is excluded from FetchMux cost of revenue in the BYOK model.
 - Hosted compute, logs, and support must remain below 20% of subscription revenue by the ten-customer checkpoint.
-- No free plan with unbounded hosted traffic. The open-source/local runner is the free acquisition surface.
+- No free plan with unbounded hosted traffic. A future licensed local runner may become the free
+  acquisition surface only after the public-release gate passes.
 - A pilot that requires more than eight founder hours after initial integration must be repriced, standardized, or declined.
 - Affiliate revenue is upside, not a core forecast.
 
@@ -130,7 +136,7 @@ A retrieval is successful only when it completes inside declared latency and cos
 
 - establish each pilot baseline before enabling routing;
 - demonstrate at least one of: 20% lower retrieval cost, 30% fewer failed requests, or an agreed quality lift;
-- publish the first methodology-complete public scorecard;
+- complete the first methodology-complete private customer scorecard;
 - reduce median integration time below 30 minutes for a prepared TypeScript service;
 - decide whether the strongest value is quality, resilience, or cost.
 
@@ -156,6 +162,8 @@ Do not protect the original idea from evidence.
 ## Founder operating rules
 
 - Keep claims tied to reproducible evidence.
+- Keep comparative provider results private unless provider terms and written permissions allow
+  publication.
 - Record decisions and reversals in the repository.
 - Do not contact people, publish publicly, spend money, register assets, or accept legal terms under the owner's identity without explicit approval.
 - Reversible product, code, research, pricing-hypothesis, and local collateral decisions are delegated to the operating lead.

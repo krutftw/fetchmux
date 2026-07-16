@@ -176,7 +176,10 @@ $env:FETCHMUX_CODE_VERSION = git rev-parse HEAD
 npm run benchmark -- --workload benchmarks/workloads/founding-v1.json --mode live --confirm-live --output benchmarks/results/founding-v1-live.json
 ```
 
-Read the [benchmark methodology](docs/research/benchmark-methodology.md) before interpreting a run.
+Live reports are private by default. Provider terms can restrict benchmarking, storage, or
+performance disclosure; review the account's accepted terms before running live and obtain counsel
+and any required written permission before sharing results. Read the
+[benchmark methodology](docs/research/benchmark-methodology.md) before interpreting a run.
 
 ## Docker
 
@@ -215,6 +218,15 @@ npm run dev:site
 - [Operating plan](docs/business/operating-plan.md)
 - [Validation scorecard](docs/business/validation-scorecard.md)
 - [Risk register](docs/business/risk-register.md)
+- [Founding pilot](docs/business/founding-pilot.md)
+- [Discovery script](docs/business/discovery-script.md)
+- [Outreach sequences](docs/business/outreach-sequences.md)
+- [Pilot scorecard](docs/business/pilot-scorecard.md)
+- [Weekly operating review](docs/business/weekly-operating-review.md)
+- [Partnership brief](docs/business/partnership-brief.md)
+- [Legal readiness checklist](docs/business/legal-readiness-checklist.md)
+- [Market evidence](docs/research/market-evidence.md)
+- [Source register](docs/research/source-register.md)
 
 ## Logging and persistence
 

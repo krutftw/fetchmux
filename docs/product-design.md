@@ -112,7 +112,7 @@ Early routing profiles:
 | `page_content` | fetch/extraction reliability | Firecrawl, Exa |
 | `balanced` | reliability-adjusted quality per dollar | all configured providers |
 
-These are hypotheses. The public benchmark and customer outcomes must update them.
+These are hypotheses. Private permitted benchmarks and customer outcomes must update them.
 
 ## Security and credential model
 
@@ -136,7 +136,7 @@ The founding release is BYOK and local/self-hostable first.
 - Brave, Tavily, Exa, and Firecrawl BYOK adapters;
 - REST endpoint and MCP tool;
 - offline fixtures and an opt-in live benchmark runner;
-- a public-facing benchmark report format;
+- a private customer benchmark report format and a public methodology, subject to provider terms;
 - marketing/pricing site and pilot application flow;
 - Docker and local deployment documentation.
 
@@ -171,3 +171,4 @@ Likely next capabilities are page extraction, browser sessions, and read-only bl
 - Provider-specific truth before false uniformity.
 - Measured outcomes before benchmark theatre.
 - One paid pain point before a marketplace.
+- Provider permission before comparative publication.

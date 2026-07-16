@@ -23,7 +23,7 @@ describe("FetchMux launch site", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByText(/bring your own provider keys/i)).toBeInTheDocument();
-    expect(screen.getByText(/not an official partner or reseller/i)).toBeInTheDocument();
+    expect(screen.getByText(/no partnership or resale right is claimed/i)).toBeInTheDocument();
     expect(screen.getByText("Illustrative — not live provider results")).toBeInTheDocument();
 
     const pricing = screen.getByRole("region", { name: "Pricing hypotheses" });

@@ -68,8 +68,8 @@ export function App({ pilotContactUrl }: AppProps) {
               </a>
             </div>
             <p className="commercial-truth">
-              <strong>Bring your own provider keys.</strong> FetchMux is not an official partner or
-              reseller of the providers shown in this founding build.
+              <strong>Bring your own provider keys.</strong> FetchMux is independent. No partnership
+              or resale right is claimed for providers shown in this founding build.
             </p>
           </div>
           <RouteReceiptDemo />

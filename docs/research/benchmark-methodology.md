@@ -66,7 +66,9 @@ Class means are combined with declared class weights. A class missing a metric i
 
 Private report mode writes `queryText: null` and excludes query text from the workload configuration fingerprint. A private-query file can map local references to query text for live execution; that file must remain outside source control. Provider snippets, raw page bodies, and response payloads are not stored by the runner.
 
-Generated reports belong under `benchmarks/results/`, which is git-ignored. Before publishing any report, review normalized URLs and human notes for customer, personal, or confidential information.
+Generated reports belong under `benchmarks/results/`, which is git-ignored. Before sharing any
+report outside the customer's approved team, review normalized URLs and human notes for customer,
+personal, or confidential information and complete the terms gate below.
 
 ## Illustrative material
 
@@ -91,4 +93,16 @@ The committed workload plans 96 calls at one repetition: 24 cases multiplied by 
 
 ## Publication gate
 
-A report is eligible for public use only when it is a completed live run, its configuration is reproducible, missing metrics and errors are visible, human labels are either documented or omitted, the sample size is shown, and the claims stay within the measured workload. A dry run or illustrative file is never a provider comparison.
+The default status of every live report is private and non-publishable. Technical completeness does
+not create a right to publish provider performance.
+
+A report is eligible even for publication review only when it is a completed live run, its
+configuration is reproducible, missing metrics and errors are visible, human labels are either
+documented or omitted, the sample size is shown, and the claims stay within the measured workload.
+Before public use, counsel must review the terms and order form accepted by the account holder for
+every named provider, and the operator must retain any required written provider and customer
+permission. Tavily's terms reviewed on 2026-07-16 restrict disclosure of performance analysis, and
+other providers impose relevant result-use, commercial-use, storage, or benchmarking restrictions.
+
+A dry run or illustrative file is never a provider comparison. Removing provider names does not by
+itself cure contractual, confidentiality, privacy, or trade-secret restrictions.
