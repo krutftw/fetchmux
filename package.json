@@ -1,0 +1,43 @@
+{
+  "name": "fetchmux",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "packages/core",
+    "packages/providers",
+    "packages/sdk",
+    "apps/gateway",
+    "apps/mcp",
+    "apps/benchmark",
+    "apps/site"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "biome check apps packages package.json package-lock.json tsconfig.base.json vitest.config.ts biome.json",
+    "format": "biome check --write apps packages package.json package-lock.json tsconfig.base.json vitest.config.ts biome.json",
+    "dev:gateway": "npm run dev -w @fetchmux/gateway",
+    "dev:site": "npm run dev -w @fetchmux/site",
+    "benchmark": "npm run start -w @fetchmux/benchmark --"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.3",
+    "jsdom": "^29.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
+  }
+}

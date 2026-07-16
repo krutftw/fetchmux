@@ -1,0 +1,16 @@
+{
+  "name": "@fetchmux/benchmark",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@fetchmux/core": "*",
+    "@fetchmux/providers": "*",
+    "zod": "^4.4.3"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "tsx src/main.ts"
+  }
+}
