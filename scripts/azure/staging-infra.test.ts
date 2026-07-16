@@ -13,6 +13,7 @@ describe("Azure staging infrastructure contract", () => {
   const main = readInfraFile("infra/azure/main.bicep");
   const platform = readInfraFile("infra/azure/platform.bicep");
   const app = readInfraFile("infra/azure/app.bicep");
+  const dockerIgnore = readInfraFile(".dockerignore");
 
   it("isolates staging in a subscription-scoped deployment", () => {
     expect(root).toMatch(/[\\/]fetchmux[\\/].worktrees[\\/]azure-staging[\\/]$/);
@@ -59,5 +60,20 @@ describe("Azure staging infrastructure contract", () => {
     expect(app).toContain("path: '/health'");
     expect(app).not.toContain("path: '/ready'");
   });
-});
 
+  it("keeps local and non-runtime files out of remote image builds", () => {
+    for (const path of [
+      ".git",
+      ".worktrees",
+      "node_modules",
+      "**/dist",
+      ".env",
+      "benchmarks",
+      "docs",
+      "infra",
+      "scripts",
+    ]) {
+      expect(dockerIgnore).toContain(path);
+    }
+  });
+});
