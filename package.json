@@ -16,14 +16,15 @@
     "apps/site"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "tsc -b tsconfig.solution.json && npm run build -w @fetchmux/site",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "typecheck": "npm run typecheck:workspaces && npm run typecheck:tests",
-    "typecheck:workspaces": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck:projects && npm run typecheck:site && npm run typecheck:tests",
+    "typecheck:projects": "tsc -b tsconfig.solution.json",
+    "typecheck:site": "tsc -p apps/site/tsconfig.app.json --noEmit",
     "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",
-    "lint": "biome check apps packages package.json package-lock.json tsconfig.base.json tsconfig.test.json vitest.config.ts biome.json",
-    "format": "biome check --write apps packages package.json package-lock.json tsconfig.base.json tsconfig.test.json vitest.config.ts biome.json",
+    "lint": "biome check apps packages package.json package-lock.json tsconfig.base.json tsconfig.solution.json tsconfig.test.json vitest.config.ts biome.json",
+    "format": "biome check --write apps packages package.json package-lock.json tsconfig.base.json tsconfig.solution.json tsconfig.test.json vitest.config.ts biome.json",
     "dev:gateway": "npm run dev -w @fetchmux/gateway",
     "dev:site": "npm run dev -w @fetchmux/site",
     "benchmark": "npm run start -w @fetchmux/benchmark --"

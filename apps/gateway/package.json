@@ -10,8 +10,8 @@
     "fastify": "^5.10.0"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -b",
+    "typecheck": "tsc -b",
     "dev": "tsx watch src/main.ts",
     "start": "node dist/main.js"
   }

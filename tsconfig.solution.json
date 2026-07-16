@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/providers" },
+    { "path": "./packages/sdk" },
+    { "path": "./apps/gateway" },
+    { "path": "./apps/mcp" },
+    { "path": "./apps/benchmark" }
+  ]
+}
