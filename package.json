@@ -24,6 +24,7 @@
     "typecheck:site": "tsc -p apps/site/tsconfig.app.json --noEmit",
     "typecheck:tests": "tsc -p tsconfig.test.json --noEmit",
     "lint": "biome check apps packages package.json package-lock.json tsconfig.base.json tsconfig.solution.json tsconfig.test.json vitest.config.ts biome.json",
+    "lint:openapi": "redocly lint docs/openapi.yaml",
     "format": "biome check --write apps packages package.json package-lock.json tsconfig.base.json tsconfig.solution.json tsconfig.test.json vitest.config.ts biome.json",
     "dev:gateway": "npm run dev -w @fetchmux/gateway",
     "dev:site": "npm run dev -w @fetchmux/site",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.4",
+    "@redocly/cli": "2.39.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^24.13.3",
