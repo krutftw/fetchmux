@@ -111,7 +111,7 @@ Assert-True ($secrets.Count -eq 1) 'Expected exactly one app-level secret refere
 Assert-True ($secrets[0].name -eq 'fetchmux-api-key') 'The app secret reference has an unexpected name.'
 Assert-True ($secrets[0].identity -eq $identity.id) 'The Key Vault reference is not using the managed identity.'
 Assert-True ($secrets[0].keyVaultUrl -match '/secrets/fetchmux-api-key$') 'The gateway key is not an unversioned Key Vault reference.'
-Assert-True ($null -eq $secrets[0].value) 'The gateway key must not be stored directly in the Container App definition.'
+Assert-True ($secrets[0].PSObject.Properties.Name -notcontains 'value') 'The gateway key must not be stored directly in the Container App definition.'
 
 $ingress = $app.properties.configuration.ingress
 Assert-True ([bool]$ingress.external) 'Staging ingress must be enabled for the operator smoke test.'

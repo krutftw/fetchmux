@@ -69,6 +69,7 @@ describe("Azure staging operations contract", () => {
     expect(verify).toContain("readyStatus");
     expect(verify).toContain("unauthorizedStatus");
     expect(verify).toContain("authorizedStatus");
+    expect(verify).toContain("PSObject.Properties.Name -notcontains 'value'");
   });
 
   it("never invokes a browser", () => {
