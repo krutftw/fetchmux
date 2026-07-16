@@ -2,8 +2,6 @@ import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-const root = fileURLToPath(new URL("../../", import.meta.url));
-
 function readInfraFile(path: string): string {
   const absolutePath = fileURLToPath(new URL(path, new URL("../../", import.meta.url)));
   return existsSync(absolutePath) ? readFileSync(absolutePath, "utf8") : "";
@@ -16,7 +14,6 @@ describe("Azure staging infrastructure contract", () => {
   const dockerIgnore = readInfraFile(".dockerignore");
 
   it("isolates staging in a subscription-scoped deployment", () => {
-    expect(root).toMatch(/[\\/]fetchmux[\\/].worktrees[\\/]azure-staging[\\/]$/);
     expect(main).toContain("targetScope = 'subscription'");
     expect(main).toContain("rg-fetchmux-stg-aue");
   });
