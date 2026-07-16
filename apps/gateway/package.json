@@ -7,7 +7,8 @@
     "@fastify/cors": "^11.3.0",
     "@fetchmux/core": "*",
     "@fetchmux/providers": "*",
-    "fastify": "^5.10.0"
+    "fastify": "^5.10.0",
+    "zod": "^4.4.3"
   },
   "scripts": {
     "build": "tsc -b",

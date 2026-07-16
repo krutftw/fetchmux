@@ -27,6 +27,19 @@ export interface RetrievalRouterOptions {
   readonly scheduler: RouterScheduler;
 }
 
+export interface RoutePreviewCandidate {
+  readonly providerId: string;
+  readonly estimatedCostUsd: number | null;
+  readonly estimatedLatencyMs: number;
+  readonly totalScore: number;
+  readonly components: RankedProvider["components"];
+  readonly reasonCodes: RankedProvider["reasonCodes"];
+}
+
+export interface RoutePreview {
+  readonly candidates: readonly RoutePreviewCandidate[];
+}
+
 export class RetrievalRouter {
   private readonly providers: readonly ConfiguredProvider[];
   private readonly healthStore: ProviderHealthStore;
@@ -40,6 +53,24 @@ export class RetrievalRouter {
     this.idFactory = options.idFactory;
     this.scheduler = options.scheduler;
     this.healthStore = options.healthStore;
+  }
+
+  preview(input: SearchRequestInput): RoutePreview {
+    const request = searchRequestSchema.parse(input);
+    const ranked = rankProviders(
+      request,
+      this.providers.map((provider) => this.toRankableProvider(provider)),
+    );
+    return {
+      candidates: ranked.map((candidate) => ({
+        providerId: candidate.providerId,
+        estimatedCostUsd: candidate.estimatedCostUsd,
+        estimatedLatencyMs: candidate.estimatedLatencyMs,
+        totalScore: candidate.totalScore,
+        components: candidate.components,
+        reasonCodes: candidate.reasonCodes,
+      })),
+    };
   }
 
   async search(input: SearchRequestInput): Promise<SearchResponse> {

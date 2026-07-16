@@ -149,6 +149,47 @@ function testRouter(
 }
 
 describe("RetrievalRouter", () => {
+  it("previews eligible routes without calling a provider", () => {
+    const known = provider("known", {
+      cost: 0.005,
+      behavior: success(new MutableClock(), "Known"),
+    });
+    const unknown = provider("unknown", {
+      cost: null,
+      behavior: success(new MutableClock(), "Unknown"),
+    });
+    const { router } = testRouter([unknown.configured, known.configured]);
+
+    const preview = router.preview({ query: "q", maxCostUsd: 0.01 });
+
+    expect(preview).toEqual({
+      candidates: [
+        {
+          providerId: "known",
+          estimatedCostUsd: 0.005,
+          estimatedLatencyMs: 1_000,
+          totalScore: 0.924,
+          components: {
+            quality: 0.8,
+            reliability: 0.98,
+            cost: 1,
+            latency: 1,
+          },
+          reasonCodes: [
+            "TASK_MATCH",
+            "BALANCED_PRIORITY",
+            "RELIABILITY_WEIGHT",
+            "WITHIN_BUDGET",
+            "ONLY_ELIGIBLE_PROVIDER",
+          ],
+        },
+      ],
+    });
+    expect(preview.candidates[0]).not.toHaveProperty("profile");
+    expect(known.adapter.calls).toBe(0);
+    expect(unknown.adapter.calls).toBe(0);
+  });
+
   it("returns normalized evidence and a deterministic route receipt", async () => {
     const clock = new MutableClock();
     const brave = provider("brave", {
