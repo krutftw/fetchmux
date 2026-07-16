@@ -23,7 +23,7 @@ describe("Azure staging operations contract", () => {
   it("deploys only a clean exact Git commit", () => {
     expect(deploy).toContain("status --porcelain");
     expect(deploy).toContain("rev-parse HEAD");
-    expect(deploy).toContain('fetchmux-gateway:$gitSha');
+    expect(deploy).toContain("fetchmux-gateway:$gitSha");
     expect(deploy).not.toMatch(/fetchmux-gateway:(latest|staging)/i);
   });
 
@@ -63,4 +63,3 @@ describe("Azure staging operations contract", () => {
     expect(combined).not.toMatch(/Start-Process|chrome|msedge|firefox|browser/i);
   });
 });
-
