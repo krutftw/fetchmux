@@ -13,6 +13,7 @@ workflow:
 stages:
   - build
   - test
+  - security
 
 variables:
   AST_ENABLE_MR_PIPELINES: "true"
@@ -41,6 +42,7 @@ verify:
     npm_config_fund: "false"
   script:
     - npm ci --ignore-scripts
+    - npm audit --audit-level=high
     - npm test -- --reporter=default --reporter=junit --outputFile.junit=output/ci/junit.xml
     - npm run typecheck
     - npm run lint
@@ -93,3 +95,25 @@ container_scanning:
     CS_DISABLE_LANGUAGE_VULNERABILITY_SCAN: "false"
     CS_INCLUDE_LICENSES: "true"
     CS_REPORT_OS_EOL: "true"
+
+security_gate:
+  extends: .project_pipeline_rules
+  image: node:24.18.0-bookworm-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd37b7e9a7285cf83b6951452d
+  stage: security
+  interruptible: true
+  needs:
+    - job: gitlab-advanced-sast
+      artifacts: true
+      optional: true
+    - job: semgrep-sast
+      artifacts: true
+      optional: true
+    - job: secret_detection
+      artifacts: true
+    - job: dependency-scanning
+      artifacts: true
+      optional: true
+    - job: container_scanning
+      artifacts: true
+  script:
+    - node scripts/ci/security-gate.mjs
