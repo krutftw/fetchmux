@@ -14,6 +14,10 @@ while live-provider, legal, and owner-identity actions remain unresolved. GitHub
 The GitLab account is blocked, so its earlier green pipeline evidence is historical rather than an
 available operating control.
 
+The isolated `feature/azure-staging` branch now contains compiled Bicep, guarded deployment scripts,
+and an operations runbook. This is preparation evidence only until live Azure read-back succeeds;
+no staging endpoint is claimed by this paragraph.
+
 This checklist does not claim customers, revenue, provider partnerships, public benchmark results,
 or production multi-tenant readiness.
 
@@ -28,6 +32,8 @@ or production multi-tenant readiness.
 - [x] Truthful founding site with illustrative labels, provisional pricing, and disabled intake when
   no real destination is configured.
 - [x] OpenAPI contract, local and deployment runbooks, incident and data-handling procedures.
+- [x] Reproducible scale-to-zero Azure staging templates with managed identity, Key Vault references,
+  operator-IP ingress, exact-commit images, and secret-safe deployment verification.
 - [x] Founding pilot offer, discovery and outreach material, scorecards, operating review, market
   evidence, partnership brief, and legal-readiness checklist.
 
@@ -139,6 +145,17 @@ GitLab currently returns `403 Forbidden - Your account has been blocked.` Neithe
 founding build because Azure Repos, Azure Pipelines, and Azure draft pull request `#1` are live, and
 GitHub retains an exact private backup.
 
+## Authorized Azure credit use
+
+- [x] On 2026-07-17 the owner explicitly authorized paid Azure features while promotional credits
+  are available.
+- [x] Subscription read-back reported the legacy Free Trial quota and `spendingLimit=On`.
+- [x] The first authorized use is bounded to private single-tenant staging in
+  `rg-fetchmux-stg-aue`, with a Basic registry and Container Apps scale `0..1`.
+- [ ] Do not remove the spending limit, convert the subscription, purchase Marketplace products,
+  add paid support, or raise the cost envelope without a new decision backed by current prices and
+  remaining-credit evidence.
+
 ## Intentionally deferred and owner-gated
 
 - [ ] Make the repository public, merge or mark the draft pull request ready, publish a package,
@@ -146,7 +163,7 @@ GitHub retains an exact private backup.
 - [ ] Contact prospects or providers, send outreach under the owner's identity, collect lead data,
   or claim a partnership.
 - [ ] Buy a domain, clear or register a trademark, form a legal entity, accept provider or commercial
-  terms, create paid accounts, spend credits, charge a card, or accept payment.
+  terms, charge a card, or accept payment.
 - [ ] Build a hosted credential vault, multi-tenant control plane, pooled provider-credit product, or
   public provider league table.
 - [ ] Expose the gateway remotely without reviewed TLS termination, access restrictions, log
@@ -169,7 +186,8 @@ GitHub retains an exact private backup.
    before merging the founding pull request, then smoke-test the schedule again from the default
    branch.
 7. Remote operation depends on the deployment runbook's external TLS, rate-limit, secret-management,
-   monitoring, backup, and incident controls.
+   monitoring, backup, and incident controls. Private staging follows the narrower
+   [Azure staging runbook](../runbooks/azure-staging.md).
 
 ## Release posture
 
