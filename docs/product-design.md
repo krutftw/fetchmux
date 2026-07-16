@@ -77,7 +77,22 @@ The response preserves evidence and routing truth:
     "route": {
       "selectedProvider": "brave",
       "attemptedProviders": ["brave"],
-      "reasonCodes": ["FRESHNESS_MATCH", "WITHIN_BUDGET"],
+      "attempts": [
+        {
+          "provider": "brave",
+          "startedAt": "2026-07-16T08:00:00.000Z",
+          "endedAt": "2026-07-16T08:00:00.423Z",
+          "latencyMs": 423,
+          "estimatedCostUsd": 0.005,
+          "outcome": "success"
+        }
+      ],
+      "reasonCodes": [
+        "TASK_MATCH",
+        "QUALITY_PRIORITY",
+        "RELIABILITY_WEIGHT",
+        "WITHIN_BUDGET"
+      ],
       "estimatedCostUsd": 0.005,
       "latencyMs": 423,
       "fallbackUsed": false,
@@ -134,7 +149,7 @@ The founding release is BYOK and local/self-hostable first.
 - transient-failure classification, fallback, and circuit breaking;
 - normalized result schema and route receipts;
 - Brave, Tavily, Exa, and Firecrawl BYOK adapters;
-- REST endpoint and MCP tool;
+- REST endpoints and MCP tools;
 - offline fixtures and an opt-in live benchmark runner;
 - a private customer benchmark report format and a public methodology, subject to provider terms;
 - marketing/pricing site and pilot application flow;
