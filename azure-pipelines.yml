@@ -1,0 +1,138 @@
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+
+# Azure Repos PR validation is enforced by the main-branch build policy.
+pr: none
+
+schedules:
+  - cron: "0 22 * * 0"
+    displayName: Weekly Monday 06:00 Australia/Perth security rescan
+    branches:
+      include:
+        - main
+    always: true
+    batch: true
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+  npm_config_audit: "false"
+  npm_config_fund: "false"
+  FETCHMUX_IMAGE: fetchmux:$(Build.BuildId)
+
+jobs:
+  - job: verify
+    displayName: Verify and scan
+    timeoutInMinutes: 30
+    cancelTimeoutInMinutes: 1
+    steps:
+      - checkout: self
+        clean: true
+        fetchDepth: 0
+        persistCredentials: false
+
+      - bash: |
+          set -euo pipefail
+          version="8.30.1"
+          archive="gitleaks_${version}_linux_x64.tar.gz"
+          curl --fail --silent --show-error --location \
+            --output "$(Agent.TempDirectory)/${archive}" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${version}/${archive}"
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  $(Agent.TempDirectory)/${archive}" | sha256sum --check --strict
+          tar --extract --gzip --file "$(Agent.TempDirectory)/${archive}" --directory "$(Agent.TempDirectory)" gitleaks
+          "$(Agent.TempDirectory)/gitleaks" git . --redact --no-banner
+        displayName: Scan full Git history for secrets
+
+      - task: UseNode@1
+        displayName: Use Node.js 24.18.0
+        inputs:
+          version: "24.18.0"
+          checkLatest: false
+
+      - task: Cache@2
+        displayName: Cache npm downloads
+        inputs:
+          key: 'npm | "$(Agent.OS)" | package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(npm_config_cache)
+
+      - bash: npm ci --ignore-scripts --prefer-offline
+        displayName: Install locked dependencies
+
+      - bash: npm audit --audit-level=high
+        displayName: Audit dependencies
+        env:
+          npm_config_audit: "true"
+
+      - bash: |
+          set -euo pipefail
+          mkdir -p output/ci
+          npm test -- --reporter=default --reporter=junit --outputFile.junit=output/ci/junit.xml
+        displayName: Run tests
+
+      - task: PublishTestResults@2
+        displayName: Publish test results
+        condition: always()
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: output/ci/junit.xml
+          searchFolder: $(System.DefaultWorkingDirectory)
+          mergeTestResults: true
+          failTaskOnFailedTests: true
+          failTaskOnFailureToPublishResults: true
+          failTaskOnMissingResultsFile: true
+          testRunTitle: FetchMux $(Build.SourceVersion)
+
+      - bash: npm run typecheck
+        displayName: Type-check workspace
+
+      - bash: npm run lint
+        displayName: Lint source
+
+      - bash: npm run lint:openapi
+        displayName: Lint OpenAPI contract
+
+      - bash: npm run build
+        displayName: Build workspace
+
+      - bash: npm run benchmark -- --workload benchmarks/workloads/founding-v1.json --mode dry-run
+        displayName: Run zero-network benchmark dry run
+
+      - bash: |
+          set -euo pipefail
+          docker build --pull --tag "$(FETCHMUX_IMAGE)" .
+          test "$(docker image inspect "$(FETCHMUX_IMAGE)" --format '{{.Config.User}}')" = "nonroot"
+        displayName: Build non-root container image
+
+      - bash: |
+          set -euo pipefail
+          version="0.72.0"
+          archive="trivy_${version}_Linux-64bit.tar.gz"
+          curl --fail --silent --show-error --location \
+            --output "$(Agent.TempDirectory)/${archive}" \
+            "https://github.com/aquasecurity/trivy/releases/download/v${version}/${archive}"
+          echo "bbb64b9695866ce4a7a8f5c9592002c5961cab378577fa3f8a040df362b9b2ea  $(Agent.TempDirectory)/${archive}" | sha256sum --check --strict
+          tar --extract --gzip --file "$(Agent.TempDirectory)/${archive}" --directory "$(Agent.TempDirectory)" trivy
+          "$(Agent.TempDirectory)/trivy" image \
+            --scanners vuln \
+            --pkg-types os \
+            --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL \
+            --exit-code 0 \
+            --no-progress \
+            --timeout 10m \
+            "$(FETCHMUX_IMAGE)"
+          "$(Agent.TempDirectory)/trivy" image \
+            --scanners vuln \
+            --pkg-types os \
+            --severity UNKNOWN,HIGH,CRITICAL \
+            --exit-code 1 \
+            --no-progress \
+            --timeout 10m \
+            "$(FETCHMUX_IMAGE)"
+        displayName: Report container findings and enforce severity gate
