@@ -1,0 +1,360 @@
+{
+  "schemaVersion": 1,
+  "id": "founding-v1",
+  "title": "FetchMux founding retrieval workload",
+  "description": "A public, non-sensitive workload for measuring provider behavior across fresh facts, technical documentation, deep research, and page-content retrieval.",
+  "providers": ["brave", "tavily", "exa", "firecrawl"],
+  "repetitions": 1,
+  "seed": 381774,
+  "fetchPolicies": {
+    "fresh_facts": {
+      "priority": "balanced",
+      "maxLatencyMs": 10000,
+      "limit": 8,
+      "fetchContent": false,
+      "language": "en"
+    },
+    "technical_docs": {
+      "priority": "quality",
+      "maxLatencyMs": 12000,
+      "limit": 8,
+      "fetchContent": false,
+      "language": "en"
+    },
+    "deep_research": {
+      "priority": "quality",
+      "maxLatencyMs": 20000,
+      "limit": 10,
+      "fetchContent": false,
+      "language": "en"
+    },
+    "page_content": {
+      "priority": "quality",
+      "maxLatencyMs": 20000,
+      "limit": 5,
+      "fetchContent": true,
+      "language": "en"
+    }
+  },
+  "cases": [
+    {
+      "id": "fresh-node-release",
+      "query": "latest stable Node.js release official release page",
+      "workloadClass": "fresh_facts",
+      "task": "fresh_facts",
+      "freshness": "30d",
+      "expectedSourceHints": ["nodejs.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "fresh-typescript-release",
+      "query": "current stable TypeScript release official announcement",
+      "workloadClass": "fresh_facts",
+      "task": "fresh_facts",
+      "freshness": "30d",
+      "expectedSourceHints": ["devblogs.microsoft.com", "typescriptlang.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "fresh-python-release",
+      "query": "latest stable Python release official downloads",
+      "workloadClass": "fresh_facts",
+      "task": "fresh_facts",
+      "freshness": "30d",
+      "expectedSourceHints": ["python.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "fresh-workers-pricing",
+      "query": "current Cloudflare Workers request pricing official",
+      "workloadClass": "fresh_facts",
+      "task": "fresh_facts",
+      "freshness": "30d",
+      "expectedSourceHints": ["cloudflare.com", "developers.cloudflare.com"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "fresh-postgresql-releases",
+      "query": "latest PostgreSQL minor releases official news",
+      "workloadClass": "fresh_facts",
+      "task": "fresh_facts",
+      "freshness": "30d",
+      "expectedSourceHints": ["postgresql.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "fresh-actions-pricing",
+      "query": "current GitHub Actions hosted runner pricing official",
+      "workloadClass": "fresh_facts",
+      "task": "fresh_facts",
+      "freshness": "30d",
+      "expectedSourceHints": ["github.com", "docs.github.com"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "docs-node-abort-timeout",
+      "query": "Node.js AbortSignal.timeout API official documentation",
+      "workloadClass": "technical_docs",
+      "task": "balanced",
+      "expectedSourceHints": ["nodejs.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "docs-fastify-body-limit",
+      "query": "Fastify bodyLimit request option official reference",
+      "workloadClass": "technical_docs",
+      "task": "balanced",
+      "expectedSourceHints": ["fastify.dev"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "docs-zod-record-enum",
+      "query": "Zod record enum keys exhaustive validation official documentation",
+      "workloadClass": "technical_docs",
+      "task": "balanced",
+      "expectedSourceHints": ["zod.dev"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "docs-mcp-tool-annotations",
+      "query": "Model Context Protocol tool annotations readOnlyHint specification",
+      "workloadClass": "technical_docs",
+      "task": "balanced",
+      "expectedSourceHints": ["modelcontextprotocol.io"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "docs-brave-freshness",
+      "query": "Brave Search API web freshness parameter official documentation",
+      "workloadClass": "technical_docs",
+      "task": "balanced",
+      "expectedSourceHints": ["search.brave.com"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "docs-tavily-search-depth",
+      "query": "Tavily Search API search_depth credits official documentation",
+      "workloadClass": "technical_docs",
+      "task": "balanced",
+      "expectedSourceHints": ["docs.tavily.com"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "research-retry-after",
+      "query": "authoritative semantics for Retry-After with HTTP 429 and 503",
+      "workloadClass": "deep_research",
+      "task": "deep_research",
+      "expectedSourceHints": ["rfc-editor.org", "developer.mozilla.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "research-oauth-21-status",
+      "query": "OAuth 2.1 current specification status and security changes primary sources",
+      "workloadClass": "deep_research",
+      "task": "deep_research",
+      "freshness": "1y",
+      "expectedSourceHints": ["ietf.org", "datatracker.ietf.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "research-rag-provenance",
+      "query": "primary research evaluating citation provenance in retrieval augmented generation",
+      "workloadClass": "deep_research",
+      "task": "deep_research",
+      "expectedSourceHints": ["arxiv.org", "aclanthology.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "research-key-rotation",
+      "query": "zero downtime API key rotation operational guidance primary cloud documentation",
+      "workloadClass": "deep_research",
+      "task": "deep_research",
+      "expectedSourceHints": ["cloud.google.com", "docs.aws.amazon.com"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "research-dnssec-operations",
+      "query": "authoritative DNSSEC deployment and rollover operational guidance",
+      "workloadClass": "deep_research",
+      "task": "deep_research",
+      "expectedSourceHints": ["icann.org", "rfc-editor.org"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "research-serverless-cold-start",
+      "query": "serverless cold start mitigation evidence official cloud architecture documentation",
+      "workloadClass": "deep_research",
+      "task": "deep_research",
+      "expectedSourceHints": ["docs.aws.amazon.com", "cloud.google.com", "learn.microsoft.com"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "content-exa-contents",
+      "query": "Exa API search endpoint contents option official page",
+      "workloadClass": "page_content",
+      "task": "page_content",
+      "expectedSourceHints": ["exa.ai"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "content-firecrawl-search-v2",
+      "query": "Firecrawl v2 search API official documentation page",
+      "workloadClass": "page_content",
+      "task": "page_content",
+      "expectedSourceHints": ["firecrawl.dev"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "content-brave-response",
+      "query": "Brave Web Search API response schema official documentation page",
+      "workloadClass": "page_content",
+      "task": "page_content",
+      "expectedSourceHints": ["search.brave.com"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "content-tavily-response",
+      "query": "Tavily Search API response object official reference page",
+      "workloadClass": "page_content",
+      "task": "page_content",
+      "expectedSourceHints": ["docs.tavily.com"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "content-mcp-tools",
+      "query": "Model Context Protocol tools specification official page",
+      "workloadClass": "page_content",
+      "task": "page_content",
+      "expectedSourceHints": ["modelcontextprotocol.io"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    },
+    {
+      "id": "content-fastify-redaction",
+      "query": "Fastify logging redact option official reference page",
+      "workloadClass": "page_content",
+      "task": "page_content",
+      "expectedSourceHints": ["fastify.dev"],
+      "humanLabels": {
+        "brave": { "relevance": null, "answerAccuracy": null },
+        "tavily": { "relevance": null, "answerAccuracy": null },
+        "exa": { "relevance": null, "answerAccuracy": null },
+        "firecrawl": { "relevance": null, "answerAccuracy": null }
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "illustrative": true,
+  "comparisonAllowed": false,
+  "banner": "ILLUSTRATIVE — NOT LIVE PROVIDER RESULTS OR A PROVIDER COMPARISON",
+  "warning": "Every number in this file is fabricated to demonstrate report layout. The labels are neutral placeholders, not real providers.",
+  "exampleLayout": {
+    "illustrative": true,
+    "comparisonAllowed": false,
+    "statisticalTreatment": "descriptive_only_no_bootstrap",
+    "providers": [
+      {
+        "illustrative": true,
+        "comparisonAllowed": false,
+        "label": "Example route A",
+        "sampleCount": 12,
+        "exampleMetrics": {
+          "illustrative": true,
+          "comparisonAllowed": false,
+          "meanLatencyMs": 820,
+          "successRate": 0.92,
+          "meanEstimatedCostUsd": 0.006
+        }
+      },
+      {
+        "illustrative": true,
+        "comparisonAllowed": false,
+        "label": "Example route B",
+        "sampleCount": 12,
+        "exampleMetrics": {
+          "illustrative": true,
+          "comparisonAllowed": false,
+          "meanLatencyMs": 1140,
+          "successRate": 0.83,
+          "meanEstimatedCostUsd": 0.004
+        }
+      }
+    ]
+  }
+}
