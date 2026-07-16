@@ -14,10 +14,11 @@ As of 2026-07-17 (Australia/Perth):
 | CI | Azure Pipelines | `FetchMux CI`, definition `1` | Build `20260716.1` passed |
 | Private backup | GitHub | `https://github.com/krutftw/fetchmux` | Active |
 | Historical forge | GitLab | `https://gitlab.com/fetchmux/platform` | Account blocked; API returns HTTP 403 |
-| Offline recovery | Git bundle | `C:\Users\Administrator\fetchmux-backups\fetchmux-2026-07-17.bundle` | Verified |
+| Offline recovery | Git bundle | `C:\Users\Administrator\fetchmux-backups\fetchmux-azure-2026-07-17.bundle` | Verified through `4c7b0dcdfe466ce6728fbcd9f3368b855c8e26b3` |
 
 The bundle SHA-256 is
-`fd4cf3cc4a44b9be43b57d4036f91e9312c3b7c7c73c54617b54c64f8ab9f746`.
+`fd69fca639505dcf043ab688cd28aae68845398d4390f663f04585a4228af6ce` and its size is
+248,953 bytes. The earlier pre-Azure bundle is retained separately rather than overwritten.
 
 ## Local remotes
 
@@ -59,8 +60,8 @@ read-back is not sufficient evidence.
 Verify the offline bundle before relying on it:
 
 ```powershell
-git bundle verify C:\Users\Administrator\fetchmux-backups\fetchmux-2026-07-17.bundle
-Get-FileHash C:\Users\Administrator\fetchmux-backups\fetchmux-2026-07-17.bundle -Algorithm SHA256
+git bundle verify C:\Users\Administrator\fetchmux-backups\fetchmux-azure-2026-07-17.bundle
+Get-FileHash C:\Users\Administrator\fetchmux-backups\fetchmux-azure-2026-07-17.bundle -Algorithm SHA256
 ```
 
 Create a replacement bundle only from the intended repository, then verify it before replacing the
