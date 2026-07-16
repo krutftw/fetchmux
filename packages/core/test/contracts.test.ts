@@ -72,6 +72,30 @@ describe("searchRequestSchema", () => {
 });
 
 describe("routeReceiptSchema", () => {
+  it("represents an unknown total cost explicitly", () => {
+    const value = routeReceiptSchema.parse({
+      selectedProvider: "tavily",
+      attemptedProviders: ["tavily"],
+      attempts: [
+        {
+          provider: "tavily",
+          startedAt: "2026-07-16T08:00:00.000Z",
+          endedAt: "2026-07-16T08:00:00.010Z",
+          latencyMs: 10,
+          estimatedCostUsd: null,
+          outcome: "success",
+        },
+      ],
+      reasonCodes: ["TASK_MATCH"],
+      estimatedCostUsd: null,
+      latencyMs: 10,
+      fallbackUsed: false,
+      traceId: "rt_test",
+    });
+
+    expect(value.estimatedCostUsd).toBeNull();
+  });
+
   it("rejects a negative cost estimate", () => {
     expect(() =>
       routeReceiptSchema.parse({

@@ -103,7 +103,7 @@ export const routeReceiptSchema = z.object({
   attemptedProviders: z.array(z.string().trim().min(1).max(64)).min(1),
   attempts: z.array(routeAttemptSchema).min(1),
   reasonCodes: z.array(routeReasonCodeSchema).min(1),
-  estimatedCostUsd: z.number().finite().nonnegative(),
+  estimatedCostUsd: z.number().finite().nonnegative().nullable(),
   latencyMs: z.number().finite().nonnegative(),
   fallbackUsed: z.boolean(),
   traceId: z.string().trim().min(1).max(128),
