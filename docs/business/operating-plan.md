@@ -20,7 +20,8 @@ The long-term asset is a task-level dataset connecting request characteristics, 
 - **Price:** USD 750 setup plus USD 99 for the first month.
 - **Customer supplies:** provider accounts, keys, 50 to 250 representative queries, current cost or
   incident evidence, and one measurable success metric.
-- **FetchMux supplies:** integration, baseline benchmark, routing configuration, weekly scorecard, and an end-of-pilot ROI report.
+- **FetchMux supplies:** integration, baseline benchmark, configuration in the customer's current
+  control plane or FetchMux where justified, a weekly scorecard, and an end-of-pilot ROI report.
 - **Guarantee:** if no agreed metric improves and the integration has not reduced engineering work, waive the first monthly charge. Setup pays for real integration labour and is not positioned as a refundable deposit.
 
 ### Self-serve Pro

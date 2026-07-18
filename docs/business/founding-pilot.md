@@ -84,7 +84,8 @@ FetchMux never asks for a provider key in email, chat, an issue, a proposal, or 
 - kickoff and data-flow review;
 - terms and workload-use checkpoint, recorded as a gate rather than legal approval;
 - baseline measurement plan;
-- single-tenant gateway installation and one client integration;
+- one client integration and, only where the existing control plane is insufficient, a single-tenant
+  FetchMux gateway installation;
 - up to two initially enabled providers unless separately agreed;
 - versioned cost profile from the customer's actual account information;
 - deterministic routing policy with hard cost and deadline controls;

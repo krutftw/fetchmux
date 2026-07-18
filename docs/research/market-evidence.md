@@ -75,9 +75,21 @@ Several current projects already combine or route search providers:
   MCP-compatible search gateway with routing, fallback, caching, and control.
 - [Seer](https://seersearch.com/) directly sells retrieval evaluation, change testing, alerts, and
   groundedness/recall/latency scoring. Observability by itself is also a competitive category.
+- [Vellum](https://www.vellum.ai/docs/key-concepts/web-search) already lets customers connect
+  multiple BYOK web-search providers and describes ordered resilience when one upstream is down.
+- [Portkey](https://portkey.ai/docs/integrations/plugins/tavily) can run Tavily at the AI-gateway
+  layer, inject search context across model providers, and expose search query, sources, context,
+  usage, and credit metadata in its logs.
+- [Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/usage/web-search/) exposes
+  web-search calls in gateway logs and unified billing at the upstream provider's search rate.
 
 These sources validate activity and competition. They invalidate any claim that FetchMux invented
 multi-provider search routing.
+
+They also change the delivery rule. FetchMux must not require a buyer to replace a working Vellum,
+Portkey, Cloudflare, or in-house control plane merely to complete an audit. The founding service
+should measure the current path first, recommend configuration or a direct provider when sufficient,
+and install the FetchMux gateway only when its policy or receipts produce incremental value.
 
 ### The original universal API and agent-payment concept is already crowded
 
@@ -220,6 +232,7 @@ the founding success criterion; virality is optional upside.
 | Model-native web search | No separate search service for supported models | Provider independence or control matters for this workload. |
 | One dominant provider | Low operational complexity | A second provider has demonstrated value; otherwise recommend the single provider. |
 | Retrieval evaluation platform | Quality and change testing without a routing gateway | Customer-specific cost reconciliation, safe deployment, and operational remediation justify the service. |
+| Existing AI platform gateway | BYOK search, fallback, logging, or unified billing already live | An independent audit finds a customer outcome the platform does not already measure; otherwise configure the existing platform. |
 
 FetchMux loses honestly when one provider is sufficient. The pilot must be allowed to recommend
 that outcome.
