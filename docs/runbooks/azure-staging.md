@@ -56,6 +56,36 @@ Primary pricing references:
 - [Azure Monitor pricing](https://azure.microsoft.com/en-us/pricing/details/monitor/)
 - [Free Trial spending limits](https://learn.microsoft.com/en-us/azure/cost-management-billing/manage/spending-limit)
 
+## Reauthenticate without opening the local browser
+
+If Azure CLI returns `AADSTS530035` or says an interactive authentication is required, stop the
+deployment and let the account owner refresh the CLI session. Do not weaken Security Defaults or
+Conditional Access to make automation pass. In an owner-controlled terminal, capture the current
+tenant and subscription before clearing the stale session, then force the device-code flow:
+
+```powershell
+$tenantId = az account show --query tenantId -o tsv
+$subscriptionId = az account show --query id -o tsv
+
+if ([string]::IsNullOrWhiteSpace($tenantId) -or [string]::IsNullOrWhiteSpace($subscriptionId)) {
+  throw 'Azure CLI has no cached tenant or subscription. Select them in Azure before continuing.'
+}
+
+az logout
+az login `
+  --use-device-code `
+  --tenant $tenantId `
+  --subscription $subscriptionId `
+  --scope 'https://management.core.windows.net//.default'
+az account show --query '{subscription:name, tenant:tenantId}' -o table
+```
+
+`--use-device-code` prints a URL and one-time code in the terminal instead of launching a browser on
+this computer. The owner completes MFA at that URL and returns only after `az account show`
+succeeds. Never paste the resulting token, account credentials, or MFA code into a document, issue,
+chat, or shell argument. Microsoft documents device-code login in
+[Authenticate to Azure using Azure CLI](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli-interactively?view=azure-cli-latest).
+
 ## Validate without changing Azure
 
 From the repository root:
