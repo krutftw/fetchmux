@@ -45,6 +45,24 @@ uploads `apps/site/dist` with the full Git SHA and `commit_dirty=false`, verifie
 deployment URL, associates `fetchmux.com` through the Pages API, waits for domain activation, and
 then repeats the checks through the canonical HTTPS origin.
 
+Wrangler OAuth can manage Pages but does not grant arbitrary DNS record access. For the first domain
+association only, provide a token scoped to `Zone / DNS / Edit` for `fetchmux.com` through masked
+process input. The script uses it only when the domain is not already active, creates the exact apex
+CNAME when no record exists, and refuses to replace a conflicting record:
+
+```powershell
+$env:FETCHMUX_CLOUDFLARE_DNS_TOKEN = Read-Host 'DNS-scoped Cloudflare token' -MaskInput
+try {
+  pwsh -NoProfile -File scripts/cloudflare/deploy-site.ps1 -Apply
+} finally {
+  Remove-Item Env:FETCHMUX_CLOUDFLARE_DNS_TOKEN -ErrorAction SilentlyContinue
+}
+```
+
+Do not put this value in a script argument, checked-in file, shell profile, or deployment metadata.
+Once the domain is active, ordinary content deployments continue through Wrangler OAuth without the
+DNS credential.
+
 The live checks require HTTP `200` and the intended media type for:
 
 - `/`

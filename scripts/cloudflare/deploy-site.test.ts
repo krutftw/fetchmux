@@ -36,6 +36,9 @@ describe("Cloudflare site deployment contract", () => {
     expect(deploy).toContain("$ProductionBranch = 'main'");
     expect(deploy).toContain("'pages', 'project', 'create'");
     expect(deploy).toContain("/pages/projects/$ProjectName/domains");
+    expect(deploy).toContain("Ensure-ApexDnsRecord");
+    expect(deploy).toContain("FETCHMUX_CLOUDFLARE_DNS_TOKEN");
+    expect(deploy).toContain('content = "$ProjectName.pages.dev"');
   });
 
   it("verifies the deployment surface before attaching the apex domain", () => {

@@ -197,7 +197,7 @@ function Get-WranglerCredential {
 function Invoke-CloudflareApi {
   param(
     [Parameter(Mandatory)][string]$Credential,
-    [Parameter(Mandatory)][ValidateSet('Get', 'Post')][string]$Method,
+    [Parameter(Mandatory)][ValidateSet('Get', 'Patch', 'Post')][string]$Method,
     [Parameter(Mandatory)][string]$Uri,
     [string]$Body = ''
   )
@@ -251,24 +251,79 @@ function Add-CustomDomain {
   $existing = @($domainResponse.result | Where-Object name -eq $Domain)
   if ($existing.Count -eq 0) {
     $body = @{ name = $Domain } | ConvertTo-Json -Compress
-    Invoke-CloudflareApi `
+    $createdResponse = Invoke-CloudflareApi `
       -Credential $Credential `
       -Method Post `
       -Uri $domainsEndpoint `
-      -Body $body | Out-Null
+      -Body $body
+    $currentDomain = $createdResponse.result
+  } else {
+    $currentDomain = $existing[0]
   }
 
   return [pscustomobject]@{
     accountId = $accountId
+    zoneId = [string]$zones[0].id
     domainEndpoint = "$domainsEndpoint/$encodedDomain"
+    status = [string]$currentDomain.status
   }
+}
+
+function Ensure-ApexDnsRecord {
+  param(
+    [Parameter(Mandatory)][string]$Credential,
+    [Parameter(Mandatory)][string]$ZoneId,
+    [Parameter(Mandatory)][string]$Domain
+  )
+
+  $apiRoot = 'https://api.cloudflare.com/client/v4'
+  $encodedDomain = [Uri]::EscapeDataString($Domain)
+  $recordsEndpoint = "$apiRoot/zones/$ZoneId/dns_records"
+  try {
+    $recordsResponse = Invoke-CloudflareApi `
+      -Credential $Credential `
+      -Method Get `
+      -Uri "$recordsEndpoint`?name=$encodedDomain"
+  } catch {
+    if ($_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 403) {
+      throw 'First-time domain setup needs a DNS Edit credential in FETCHMUX_CLOUDFLARE_DNS_TOKEN.'
+    }
+    throw
+  }
+
+  $records = @($recordsResponse.result)
+  if ($records.Count -gt 1) {
+    throw "$Domain has multiple DNS records; refusing an ambiguous Pages update."
+  }
+  if ($records.Count -eq 1) {
+    $record = $records[0]
+    if ($record.type -ne 'CNAME' -or $record.content -ne "$ProjectName.pages.dev") {
+      throw "$Domain already has a conflicting DNS record; no record was changed."
+    }
+    return $record
+  }
+
+  $body = @{
+    type = 'CNAME'
+    name = $Domain
+    content = "$ProjectName.pages.dev"
+    proxied = $true
+    ttl = 1
+    comment = 'FetchMux Pages apex'
+  } | ConvertTo-Json
+  $createdResponse = Invoke-CloudflareApi `
+    -Credential $Credential `
+    -Method Post `
+    -Uri $recordsEndpoint `
+    -Body $body
+  return $createdResponse.result
 }
 
 function Wait-CustomDomain {
   param(
     [Parameter(Mandatory)][string]$Credential,
     [Parameter(Mandatory)][string]$DomainEndpoint,
-    [int]$MaxAttempts = 48
+    [int]$MaxAttempts = 60
   )
 
   for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
@@ -375,9 +430,28 @@ $deploymentOrigin = ([string]$deployment.Deployment).TrimEnd('/')
 $deploymentChecks = @(Test-SiteSurface -Origin $deploymentOrigin)
 
 $script:WranglerCredential = $null
+$dnsCredential = $null
+$dnsRecord = $null
 try {
   $script:WranglerCredential = Get-WranglerCredential
   $domainRegistration = Add-CustomDomain -Credential $script:WranglerCredential -Domain $CanonicalDomain
+  if ($domainRegistration.status -ne 'active') {
+    $dnsCredential = $script:WranglerCredential
+    if (Test-Path Env:FETCHMUX_CLOUDFLARE_DNS_TOKEN) {
+      $environmentCredential = (Get-Item Env:FETCHMUX_CLOUDFLARE_DNS_TOKEN).Value.Trim()
+      if (-not [string]::IsNullOrWhiteSpace($environmentCredential)) {
+        $dnsCredential = $environmentCredential
+      }
+    }
+    $dnsRecord = Ensure-ApexDnsRecord `
+      -Credential $dnsCredential `
+      -ZoneId $domainRegistration.zoneId `
+      -Domain $CanonicalDomain
+    Invoke-CloudflareApi `
+      -Credential $script:WranglerCredential `
+      -Method Patch `
+      -Uri $domainRegistration.domainEndpoint | Out-Null
+  }
   $deploymentResponse = Invoke-CloudflareApi `
     -Credential $script:WranglerCredential `
     -Method Get `
@@ -397,6 +471,7 @@ try {
   )
 } finally {
   Remove-Variable WranglerCredential -Scope Script -ErrorAction SilentlyContinue
+  Remove-Variable dnsCredential, environmentCredential -ErrorAction SilentlyContinue
 }
 
 [pscustomobject]@{
