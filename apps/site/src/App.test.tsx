@@ -91,6 +91,15 @@ describe("FetchMux launch site", () => {
     expect(html).toContain('<link rel="icon" href="/favicon.svg" />');
   });
 
+  it("emits fonts as same-origin assets instead of CSP-blocked data URLs", () => {
+    const viteConfig = readFileSync(resolve(process.cwd(), "apps/site/vite.config.ts"), "utf8");
+    const headers = readFileSync(resolve(process.cwd(), "apps/site/public/_headers"), "utf8");
+
+    expect(viteConfig).toMatch(/assetsInlineLimit:\s*0/);
+    expect(headers).toContain("font-src 'self'");
+    expect(headers).not.toContain("font-src 'self' data:");
+  });
+
   it("states domain and provider status without putting legal copy in the hero", () => {
     render(<App />);
 
