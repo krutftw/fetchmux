@@ -8,30 +8,37 @@ import { RouteReceiptDemo } from "./RouteReceiptDemo.js";
 afterEach(cleanup);
 
 describe("RouteReceiptDemo", () => {
-  it("updates the illustrative selection and reason codes with policy controls", () => {
+  it("updates the example selection and reason codes with policy controls", () => {
     render(<RouteReceiptDemo />);
-    const demo = screen.getByRole("region", { name: "Illustrative route receipt" });
+    const demo = screen.getByRole("region", { name: "Decision receipt" });
 
-    expect(within(demo).getByText("Brave", { selector: "strong" })).toBeInTheDocument();
-    expect(within(demo).getByText("BALANCED_PRIORITY")).toBeInTheDocument();
-    expect(within(demo).getByText("RELIABILITY_WEIGHT")).toBeInTheDocument();
+    expect(
+      within(demo).getByText("Brave", { selector: ".receipt-provider strong" }),
+    ).toBeInTheDocument();
+    expect(within(demo).getByText("balanced_priority")).toBeInTheDocument();
+    expect(within(demo).getByText("reliability_weight")).toBeInTheDocument();
 
-    fireEvent.click(within(demo).getByRole("button", { name: "Page content policy" }));
+    fireEvent.click(within(demo).getByRole("button", { name: "Page policy" }));
 
-    expect(within(demo).getByRole("button", { name: "Page content policy" })).toHaveAttribute(
+    expect(within(demo).getByRole("button", { name: "Page policy" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
-    expect(within(demo).getByText("Firecrawl", { selector: "strong" })).toBeInTheDocument();
-    expect(within(demo).getByText("TASK_MATCH")).toBeInTheDocument();
-    expect(within(demo).getByText("CONTENT_FETCH_REQUIRED")).toBeInTheDocument();
-    expect(within(demo).getAllByText(/closed:/i)).toHaveLength(3);
+    expect(
+      within(demo).getByText("Firecrawl", { selector: ".receipt-provider strong" }),
+    ).toBeInTheDocument();
+    expect(within(demo).getByText("task_match")).toBeInTheDocument();
+    expect(within(demo).getByText("content_required")).toBeInTheDocument();
+    expect(within(demo).getAllByText("task mismatch")).toHaveLength(2);
   });
 
-  it("labels the demo as illustrative rather than a live provider claim", () => {
+  it("labels the product surface as an example rather than a live provider claim", () => {
     render(<RouteReceiptDemo />);
 
-    expect(screen.getByText("Illustrative routing receipt")).toBeInTheDocument();
-    expect(screen.getByText(/no live provider call is made by this demo/i)).toBeInTheDocument();
+    expect(screen.getByText("Decision receipt")).toBeInTheDocument();
+    expect(screen.getByText("example · no call")).toBeInTheDocument();
+    expect(
+      screen.getByText(/provider choice, timing, and cost are not live measurements/i),
+    ).toBeInTheDocument();
   });
 });
