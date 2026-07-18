@@ -47,7 +47,7 @@ export function App({ pilotContactUrl }: AppProps) {
             Founding pilot
           </a>
         </nav>
-        <span className="provisional-note">Provisional working name</span>
+        <span className="provisional-note">fetchmux.com secured / trademark review pending</span>
       </header>
 
       <main id="main-content" tabIndex={-1}>
@@ -220,11 +220,13 @@ export function App({ pilotContactUrl }: AppProps) {
           </span>
           <span>FetchMux</span>
         </a>
-        <p>Provider-neutral retrieval routing. Provisional brand. Founding build.</p>
+        <p>Provider-neutral retrieval routing. Domain secured. Trademark review pending.</p>
         <div className="footer-links">
           <a href="#benchmark-methodology">Methodology</a>
           <a href="#pricing">Pricing hypotheses</a>
           <a href="#pilot">Pilot status</a>
+          <a href="/openapi.yaml">OpenAPI contract</a>
+          <a href="/llms.txt">Agent brief</a>
         </div>
       </footer>
     </>

@@ -81,6 +81,47 @@ describe("FetchMux launch site", () => {
     expect(html).toContain('<link rel="icon" href="/favicon.svg" />');
   });
 
+  it("states the secured-domain and trademark-review status and links machine contracts", () => {
+    render(<App />);
+
+    expect(
+      screen.getByText(/fetchmux\.com secured \/ trademark review pending/i),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "OpenAPI contract" })).toHaveAttribute(
+      "href",
+      "/openapi.yaml",
+    );
+    expect(screen.getByRole("link", { name: "Agent brief" })).toHaveAttribute("href", "/llms.txt");
+  });
+
+  it("publishes canonical, social, and structured software identity metadata", () => {
+    const html = readFileSync(resolve(process.cwd(), "apps/site/index.html"), "utf8");
+
+    expect(html).toContain('<link rel="canonical" href="https://fetchmux.com/" />');
+    expect(html).toContain('<meta property="og:type" content="website" />');
+    expect(html).toContain('<meta property="og:url" content="https://fetchmux.com/" />');
+    expect(html).toContain('<meta property="og:site_name" content="FetchMux" />');
+    expect(html).toContain('<meta name="twitter:card" content="summary" />');
+    expect(html).toContain(
+      '<meta name="twitter:title" content="FetchMux — one retrieval API, routed by policy" />',
+    );
+
+    const structuredDataMatch = html.match(
+      /<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/,
+    );
+    expect(structuredDataMatch).not.toBeNull();
+    if (!structuredDataMatch) throw new Error("Missing JSON-LD software identity");
+
+    const structuredData = JSON.parse(structuredDataMatch[1] ?? "") as Record<string, unknown>;
+    expect(structuredData).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      applicationCategory: "DeveloperApplication",
+      name: "FetchMux",
+      url: "https://fetchmux.com/",
+    });
+  });
+
   it("copies install examples with named controls", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
