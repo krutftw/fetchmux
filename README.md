@@ -12,8 +12,10 @@ APIs are interchangeable.
 
 ## Status
 
-Private founding build. `FetchMux` is a provisional working name pending formal domain, trademark,
-and company-name clearance. No provider partnership, endorsement, or resale right is implied.
+Founding-pilot build. The machine-readable discovery site is live at
+[`fetchmux.com`](https://fetchmux.com/), while the gateway remains private and single-tenant.
+`FetchMux` is a provisional working name pending formal trademark and company-name clearance. No
+provider partnership, endorsement, or resale right is implied.
 
 What exists today:
 
@@ -24,6 +26,7 @@ What exists today:
 - protected REST, typed TypeScript SDK, and read-only MCP interfaces;
 - a 24-case reproducible benchmark workload with a zero-network dry run;
 - a browser-tested founding site and local container packaging;
+- verified `hello@fetchmux.com` pilot intake and `security@fetchmux.com` vulnerability routing;
 - a live, operator-IP-restricted Azure staging gateway deployed by reproducible templates and
   secret-safe scripts, with zero provider keys enabled.
 
@@ -32,8 +35,8 @@ What does not exist yet:
 - hosted multi-tenant credential storage;
 - provider credit resale or autonomous provider signup;
 - learned routing backed by customer outcomes;
-- a production or public hosted service, public package, public site, or completed live provider
-  benchmark.
+- a production or public hosted gateway, public package, completed live provider benchmark, or
+  self-serve signup and billing.
 
 ## Prerequisites
 
@@ -103,7 +106,7 @@ shell or use an operator-controlled process manager. Docker Compose reads the ig
 | `EXA_API_KEY` | none | Exa customer credential |
 | `FIRECRAWL_API_KEY` | none | Firecrawl customer credential |
 | provider cost variables | none | Customer-plan estimates used by dollar budgets |
-| `VITE_PILOT_CONTACT_URL` | none | Safe `https:` or `mailto:` site CTA; unavailable when blank |
+| `VITE_PILOT_CONTACT_URL` | FetchMux pilot email | Optional safe `https:` or `mailto:` CTA override |
 
 See [provider configuration](docs/runbooks/provider-configuration.md) before enabling `maxCostUsd`.
 

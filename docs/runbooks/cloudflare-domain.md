@@ -72,6 +72,8 @@ The live checks require HTTP `200` and the intended media type for:
 - `/openapi.yaml`
 - `/openapi.json`
 - `/sitemap.xml`
+- `/favicon-mux.svg`
+- `/.well-known/security.txt`
 
 They also reject any public content containing the private Azure hostname.
 
@@ -86,10 +88,11 @@ npx wrangler email routing enable fetchmux.com
 npx wrangler email routing settings fetchmux.com
 ```
 
-Create explicit `hello@fetchmux.com` and `security@fetchmux.com` forwarding rules with the verified
-destination. Use `npx wrangler email routing rules create --help` immediately before applying because
-Email Routing commands are currently marked open beta. Read the settings and rules back after every
-change; do not publish a contact address until forwarding is active.
+Explicit `hello@fetchmux.com` and `security@fetchmux.com` forwarding rules were enabled and read back
+on 2026-07-18. Catch-all routing remains disabled. Use
+`npx wrangler email routing rules create --help` immediately before any future change because Email
+Routing commands are currently marked open beta. Read the settings and rules back after every
+change, and never print the private forwarding destination in public release evidence.
 
 ## Read-back
 

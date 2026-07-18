@@ -2,8 +2,10 @@ interface PilotCtaProps {
   readonly contactUrl?: string;
 }
 
+const defaultPilotContactUrl = "mailto:hello@fetchmux.com?subject=FetchMux%20founding%20pilot";
+
 export function PilotCta({ contactUrl }: PilotCtaProps) {
-  const safeContactUrl = normalizeContactUrl(contactUrl);
+  const safeContactUrl = normalizeContactUrl(contactUrl ?? defaultPilotContactUrl);
 
   return (
     <section className="pilot-section page-shell" id="pilot" aria-labelledby="pilot-title">
@@ -21,8 +23,8 @@ export function PilotCta({ contactUrl }: PilotCtaProps) {
 
           <section className="pilot-offer" aria-label="Founding pilot intake">
             <p className="pilot-price">
-              <strong>$750</strong>
-              <span>setup + $99 first month</span>
+              <strong>USD 849</strong>
+              <span>first 30 days: USD 750 setup + USD 99 pilot</span>
             </p>
             <ul>
               <li>Representative workload benchmark</li>
@@ -35,7 +37,7 @@ export function PilotCta({ contactUrl }: PilotCtaProps) {
                 href={safeContactUrl}
                 rel={safeContactUrl.startsWith("https:") ? "noreferrer" : undefined}
               >
-                <span>Book a founding pilot</span>
+                <span>Apply for a founding pilot</span>
                 <span className="action-orb" aria-hidden="true">
                   ↗
                 </span>
@@ -46,6 +48,10 @@ export function PilotCta({ contactUrl }: PilotCtaProps) {
                 <span>The application address will appear here once delivery is verified.</span>
               </div>
             )}
+            <p className="pilot-safety">
+              Never send provider keys or private queries by email. Provider usage is billed
+              separately by your provider; applicable taxes are added where required.
+            </p>
           </section>
         </div>
       </div>

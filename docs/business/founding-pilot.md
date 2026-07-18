@@ -47,6 +47,19 @@ regulated decision-making without review, a public provider comparison, or a fre
 Prices exclude any taxes and payment fees that the final entity is required to charge. No payment
 may be accepted until entity, tax, invoice, payment, refund, and contract gates are complete.
 
+### Stripe collection design
+
+The founding pilot uses a Stripe-hosted one-time checkout only after qualification and a signed
+scope. The checkout total is USD 849 for the first 30 days, represented as USD 750 setup plus the
+USD 99 pilot period. It does not create a subscription, save a payment method for later use, or
+auto-renew. Provider usage remains outside the Stripe order and is paid directly by the customer.
+
+Keep the public site application-only. Generate or disclose a live Checkout Session or Payment Link
+to the approved customer only after the legal-readiness checklist is closed. Use dynamic payment
+methods, a least-privilege restricted API key, separate test and live credentials, and Stripe's
+current API version. Do not enable automatic tax until the accountant confirms the registrations
+and those active registrations are read back in Stripe. Do not guess a product tax code.
+
 ## Customer inputs
 
 The customer supplies:

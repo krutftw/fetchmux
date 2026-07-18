@@ -27,29 +27,37 @@ describe("FetchMux launch site", () => {
     expect(screen.getByText(/no partnership or resale right is claimed/i)).toBeInTheDocument();
 
     const pilot = screen.getByRole("region", { name: "Founding pilot intake" });
-    expect(within(pilot).getByText("$750")).toBeInTheDocument();
-    expect(within(pilot).getByText("setup + $99 first month")).toBeInTheDocument();
+    expect(within(pilot).getByText("USD 849")).toBeInTheDocument();
+    expect(
+      within(pilot).getByText("first 30 days: USD 750 setup + USD 99 pilot"),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/pricing hypotheses/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/illustrative benchmark/i)).not.toBeInTheDocument();
   });
 
-  it("shows an unavailable pilot state instead of inventing an intake destination", () => {
+  it("publishes the verified founding-pilot intake without collecting secrets", () => {
     render(<App />);
 
     const pilot = screen.getByRole("region", { name: "Founding pilot intake" });
-    expect(within(pilot).getByText("Pilot intake is being connected.")).toBeInTheDocument();
+    expect(within(pilot).getByRole("link", { name: "Apply for a founding pilot" })).toHaveAttribute(
+      "href",
+      "mailto:hello@fetchmux.com?subject=FetchMux%20founding%20pilot",
+    );
     expect(
-      within(pilot).queryByRole("link", { name: "Book a founding pilot" }),
-    ).not.toBeInTheDocument();
+      within(pilot).getByText(/never send provider keys or private queries/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Pilot intake is being connected.")).not.toBeInTheDocument();
   });
 
   it("uses only a configured safe contact URL", () => {
     const { rerender } = render(<App pilotContactUrl="javascript:alert('unsafe')" />);
-    expect(screen.queryByRole("link", { name: "Book a founding pilot" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: "Apply for a founding pilot" }),
+    ).not.toBeInTheDocument();
 
     rerender(<App pilotContactUrl="https://example.com/fetchmux-pilot" />);
 
-    expect(screen.getByRole("link", { name: "Book a founding pilot" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Apply for a founding pilot" })).toHaveAttribute(
       "href",
       "https://example.com/fetchmux-pilot",
     );
@@ -85,10 +93,47 @@ describe("FetchMux launch site", () => {
     expect(styles).not.toContain("[data-reveal]");
   });
 
-  it("declares an explicit local favicon so browsers do not request a missing default", () => {
+  it("declares the compact multiplexer favicon with a cache-safe asset name", () => {
+    render(<App />);
     const html = readFileSync(resolve(process.cwd(), "apps/site/index.html"), "utf8");
+    const favicon = readFileSync(
+      resolve(process.cwd(), "apps/site/public/favicon-mux.svg"),
+      "utf8",
+    );
 
-    expect(html).toContain('<link rel="icon" href="/favicon.svg" />');
+    expect(html).toContain('<link rel="icon" type="image/svg+xml" href="/favicon-mux.svg" />');
+    expect(favicon).toContain("<title>FetchMux multiplexer mark</title>");
+    expect(favicon).toContain('fill="#1d1d1b"');
+    expect(favicon).toContain('stroke="#f7f6f3"');
+
+    const brandMarks = document.querySelectorAll(".route-mark");
+    expect(brandMarks).toHaveLength(2);
+    for (const mark of brandMarks) {
+      expect(mark.querySelectorAll("path")).toHaveLength(4);
+      expect(mark.querySelectorAll("circle")).toHaveLength(5);
+      expect(mark.querySelectorAll(".route-input")).toHaveLength(3);
+      expect(mark.querySelectorAll(".route-output")).toHaveLength(1);
+    }
+  });
+
+  it("publishes explicit intake and vulnerability contacts", () => {
+    render(<App />);
+
+    expect(screen.getByRole("link", { name: "Email FetchMux" })).toHaveAttribute(
+      "href",
+      "mailto:hello@fetchmux.com",
+    );
+    expect(screen.getByRole("link", { name: "Report a vulnerability" })).toHaveAttribute(
+      "href",
+      "mailto:security@fetchmux.com",
+    );
+
+    const securityPolicy = readFileSync(
+      resolve(process.cwd(), "apps/site/public/.well-known/security.txt"),
+      "utf8",
+    );
+    expect(securityPolicy).toContain("Contact: mailto:security@fetchmux.com");
+    expect(securityPolicy).toContain("Canonical: https://fetchmux.com/.well-known/security.txt");
   });
 
   it("emits fonts as same-origin assets instead of CSP-blocked data URLs", () => {

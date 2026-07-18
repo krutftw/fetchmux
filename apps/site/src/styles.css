@@ -126,11 +126,22 @@ a {
   width: 1.7rem;
   height: 1.7rem;
   overflow: visible;
-  fill: var(--surface);
+  fill: none;
   stroke: var(--ink);
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.4;
+}
+
+.route-mark .route-input,
+.route-mark .route-junction {
+  fill: var(--accent);
+  stroke: none;
+}
+
+.route-mark .route-output {
+  fill: var(--ink);
+  stroke: none;
 }
 
 .desktop-nav {
@@ -1148,6 +1159,13 @@ a {
 
 .pilot-action-link {
   width: 100%;
+}
+
+.pilot-safety {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.58rem;
+  line-height: 1.55;
 }
 
 .pilot-unavailable {

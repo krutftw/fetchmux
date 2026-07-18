@@ -49,7 +49,8 @@ function Invoke-WranglerJson {
 function Test-LocalSurface {
   $expectedFiles = @(
     '_headers',
-    'favicon.svg',
+    '.well-known\security.txt',
+    'favicon-mux.svg',
     'index.html',
     'llms-full.txt',
     'llms.txt',
@@ -102,6 +103,8 @@ function Test-SiteSurface {
     '/openapi.yaml' = 'application/yaml'
     '/openapi.json' = 'application/json'
     '/sitemap.xml' = 'application/xml'
+    '/favicon-mux.svg' = 'image/svg+xml'
+    '/.well-known/security.txt' = 'text/plain'
   }
 
   for ($attempt = 1; $attempt -le $MaxAttempts; $attempt++) {
@@ -154,6 +157,21 @@ function Test-SiteSurface {
         }
         if ($entry.Key -eq '/sitemap.xml' -and $content -notmatch 'https://fetchmux\.com/') {
           throw "$uri does not contain canonical URLs."
+        }
+        if (
+          $entry.Key -eq '/favicon-mux.svg' -and
+          $content -notmatch 'FetchMux multiplexer mark'
+        ) {
+          throw "$uri is not the expected FetchMux favicon."
+        }
+        if (
+          $entry.Key -eq '/.well-known/security.txt' -and
+          (
+            $content -notmatch 'Contact: mailto:security@fetchmux\.com' -or
+            $content -notmatch 'Canonical: https://fetchmux\.com/\.well-known/security\.txt'
+          )
+        ) {
+          throw "$uri is not the expected FetchMux security contact."
         }
         $results += [pscustomobject]@{
           path = [string]$entry.Key

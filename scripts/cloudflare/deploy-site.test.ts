@@ -49,6 +49,8 @@ describe("Cloudflare site deployment contract", () => {
       "/openapi.yaml",
       "/openapi.json",
       "/sitemap.xml",
+      "/favicon-mux.svg",
+      "/.well-known/security.txt",
     ]) {
       expect(deploy).toContain(`'${path}'`);
     }

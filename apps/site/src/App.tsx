@@ -316,6 +316,8 @@ export function App({ pilotContactUrl }: AppProps) {
           <a href="/openapi.yaml">OpenAPI contract</a>
           <a href="/llms.txt">Agent brief</a>
           <a href="/robots.txt">Crawler policy</a>
+          <a href="mailto:hello@fetchmux.com">Email FetchMux</a>
+          <a href="mailto:security@fetchmux.com">Report a vulnerability</a>
         </div>
         <small>
           fetchmux.com secured. Trademark review pending. Provider names identify compatible
@@ -372,12 +374,15 @@ function CodeBlock({ label, code }: { readonly label: string; readonly code: str
 function RouteMark() {
   return (
     <svg className="route-mark" viewBox="0 0 32 32" aria-hidden="true">
-      <path d="M5 7h7c4 0 4 6 8 6h7" />
-      <path d="M5 25h7c4 0 4-6 8-6h7" />
-      <circle cx="5" cy="7" r="2" />
-      <circle cx="5" cy="25" r="2" />
-      <circle cx="27" cy="13" r="2" />
-      <circle cx="27" cy="19" r="2" />
+      <path d="M6 8h4c4 0 4 8 8 8" />
+      <path d="M6 16h12" />
+      <path d="M6 24h4c4 0 4-8 8-8" />
+      <path d="M18 16h8" />
+      <circle className="route-input" cx="5" cy="8" r="2" />
+      <circle className="route-input" cx="5" cy="16" r="2" />
+      <circle className="route-input" cx="5" cy="24" r="2" />
+      <circle className="route-junction" cx="18" cy="16" r="2.25" />
+      <circle className="route-output" cx="27" cy="16" r="2" />
     </svg>
   );
 }

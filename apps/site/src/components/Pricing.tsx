@@ -1,7 +1,7 @@
 const plans = [
   {
     name: "Founding pilot",
-    price: "$750 setup + $99 first month",
+    price: "USD 849 first 30 days (USD 750 setup + USD 99 pilot)",
     label: "Paid implementation",
     description:
       "Your workload, your provider accounts, a measured baseline, routing configuration, and a weekly scorecard.",
@@ -14,7 +14,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "$49 / month",
+    price: "USD 49 / month",
     label: "Price hypothesis",
     description: "The self-serve route for small production teams after the pilot proves demand.",
     features: ["Four BYOK adapters", "Hard policy budgets", "Route receipts"],
@@ -22,7 +22,7 @@ const plans = [
   },
   {
     name: "Team",
-    price: "$199 / month",
+    price: "USD 199 / month",
     label: "Price hypothesis",
     description: "Shared routing policy and longer operational history for platform teams.",
     features: ["Shared policy sets", "Scheduled benchmarks", "Alerts and priority support"],
