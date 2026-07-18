@@ -10,6 +10,7 @@
     "react-dom": "^19.2.7"
   },
   "scripts": {
+    "prebuild": "tsx ../../scripts/site/generate-machine-surface.ts",
     "build": "vite build",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "dev": "vite",

@@ -1,0 +1,9 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://fetchmux.com/</loc></url>
+  <url><loc>https://fetchmux.com/openapi.yaml</loc></url>
+  <url><loc>https://fetchmux.com/openapi.json</loc></url>
+  <url><loc>https://fetchmux.com/llms.txt</loc></url>
+  <url><loc>https://fetchmux.com/llms-full.txt</loc></url>
+</urlset>

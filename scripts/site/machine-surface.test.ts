@@ -1,7 +1,9 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
+import { writeMachineSurface } from "./generate-machine-surface.js";
 import { buildMachineSurface } from "./machine-surface.js";
 
 const expectedPaths = [
@@ -15,6 +17,13 @@ const expectedPaths = [
 ] as const;
 
 const openapiYaml = readFileSync(resolve(process.cwd(), "docs/openapi.yaml"), "utf8");
+const temporaryRoots: string[] = [];
+
+afterEach(() => {
+  for (const root of temporaryRoots.splice(0)) {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
 
 describe("FetchMux machine-readable domain surface", () => {
   it("publishes the complete deterministic discovery surface", () => {
@@ -78,5 +87,33 @@ describe("FetchMux machine-readable domain surface", () => {
     expect(surface).not.toContain("https://mcp.fetchmux.com");
     expect(surface).not.toMatch(/public hosted (?:API|service)/i);
     expect(surface).not.toMatch(/official (?:partner|partnership) of/i);
+  });
+
+  it("writes only the known UTF-8 files and produces stable output on repeated runs", () => {
+    const temporaryRoot = mkdtempSync(join(tmpdir(), "fetchmux-machine-surface-"));
+    temporaryRoots.push(temporaryRoot);
+    const targetDirectory = join(temporaryRoot, "public");
+    const outsideFile = join(temporaryRoot, "outside.txt");
+    mkdirSync(targetDirectory);
+    writeFileSync(outsideFile, "outside sentinel\n", "utf8");
+    writeFileSync(join(targetDirectory, "favicon.svg"), "unrelated asset\n", "utf8");
+
+    writeMachineSurface({ openapiYaml, targetDirectory });
+
+    expect(readdirSync(targetDirectory).sort()).toEqual([...expectedPaths, "favicon.svg"].sort());
+    const firstRun = new Map(
+      expectedPaths.map((path) => [path, readFileSync(join(targetDirectory, path))]),
+    );
+
+    writeFileSync(join(targetDirectory, "llms.txt"), "stale generated content", "utf8");
+    writeMachineSurface({ openapiYaml, targetDirectory });
+
+    for (const path of expectedPaths) {
+      const bytes = readFileSync(join(targetDirectory, path));
+      expect(bytes).toEqual(firstRun.get(path));
+      expect(Buffer.from(bytes.toString("utf8"), "utf8")).toEqual(bytes);
+    }
+    expect(readFileSync(join(targetDirectory, "favicon.svg"), "utf8")).toBe("unrelated asset\n");
+    expect(readFileSync(outsideFile, "utf8")).toBe("outside sentinel\n");
   });
 });

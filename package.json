@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "build": "tsc -b tsconfig.solution.json && npm run build -w @fetchmux/site",
+    "generate:site": "tsx scripts/site/generate-machine-surface.ts",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "typecheck": "npm run typecheck:projects && npm run typecheck:site && npm run typecheck:tests",

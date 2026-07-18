@@ -1,0 +1,16 @@
+
+# FetchMux
+
+> Provider-neutral retrieval routing for AI agents, with inspectable policy decisions and route receipts.
+
+FetchMux is machine-first and human-governed. It is currently a private BYOK preview: operators
+provide and control their own upstream provider credentials. https://fetchmux.com publishes product
+information and machine-readable contracts; it does not currently host a public API or remote MCP
+service. No upstream partnership or resale right is claimed.
+
+## Machine contracts
+
+- [OpenAPI YAML](https://fetchmux.com/openapi.yaml): Canonical HTTP gateway contract.
+- [OpenAPI JSON](https://fetchmux.com/openapi.json): JSON form derived from the canonical YAML.
+- [Full product brief](https://fetchmux.com/llms-full.txt): Status, boundaries, and integration model.
+- [Website](https://fetchmux.com/): Human-readable product and pilot information.
