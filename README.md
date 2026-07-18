@@ -257,6 +257,7 @@ npm run dev:site
 - [Market evidence](docs/research/market-evidence.md)
 - [Source register](docs/research/source-register.md)
 - [Real-provider proof, 2026-07-18](docs/release/live-provider-proof-2026-07-18.md)
+- [Site deployment evidence, 2026-07-18](docs/release/site-deployment-2026-07-18.md)
 
 ## Logging and persistence
 

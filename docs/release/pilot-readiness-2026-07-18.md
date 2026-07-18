@@ -29,7 +29,7 @@ site and intake must never request provider keys or private queries.
 | Provider surface | BYOK adapters for Brave, Tavily, Exa, and Firecrawl plus explicit-opt-in Crossref scholarly metadata | Pilot-ready, account terms still checked per customer |
 | Interfaces | Authenticated REST, typed TypeScript SDK, read-only MCP, versioned OpenAPI | Pilot-ready |
 | Packaging | Non-root container, reproducible Azure templates, single-tenant runbooks | Pilot-ready |
-| Public discovery | Human site, OpenAPI, `llms.txt`, robots, sitemap, canonical metadata | Live |
+| Public discovery | Human site, OpenAPI, `llms.txt`, robots, sitemap, canonical metadata | Live at clean commit `5c52503`; [deployment evidence](site-deployment-2026-07-18.md) |
 | Intake | Explicit `hello@` and `security@` routes, verified destination, disabled catch-all | Live |
 | Payment tooling | Official Stripe skill, CLI, curated plugin, and OAuth MCP installed; application-only site | Test preparation only |
 | Staging | HTTPS health responds; readiness deliberately fails with zero provider keys; auth blocks anonymous protected calls | Safe but not a live-provider proof |
