@@ -80,9 +80,9 @@ Subject: how your team measures web retrieval
 > web-retrieval workload and has actually considered a second provider. I am not looking for a broad
 > AI introduction.
 >
-> The work is a paid, customer-controlled pilot around cost/deadline policy and safe fallback. It is
-> not pooled API credits. Would you be comfortable forwarding the note below to one person? Please
-> do not share their details without their agreement.
+> The work is a paid, customer-controlled retrieval economics and reliability audit. It is not
+> pooled API credits. Would you be comfortable forwarding the note below to one person? Please do
+> not share their details without their agreement.
 
 Forwardable note:
 
@@ -93,11 +93,26 @@ Forwardable note:
 ## Sequence D: reply to an inbound request
 
 > Thanks for reaching out. Before a demo, could you share a non-sensitive description of the
-> workload, approximate monthly retrieval volume, current provider count, and the one metric you
+> workload, current provider count, approximate monthly retrieval and downstream context spend,
+> engineering time spent on retrieval, the impact of a material failure, and the one metric you
 > would want to improve? Please do not send keys, customer queries, or provider output.
 >
 > If the founding pilot fits, I will send the reviewed scope and secure next steps. Provider usage
 > remains on your accounts.
+
+## Public X demand test, draft only
+
+Do not post this until the owner approves the exact text:
+
+> Question for teams running AI agents in production: when web retrieval goes wrong, what actually
+> costs you more: provider spend, downstream context tokens, failed tasks, or engineering time?
+>
+> We are testing a paid retrieval economics audit for teams already using or evaluating two or more
+> providers. If this is a real line item rather than an annoyance, reply or DM. No API keys or
+> private queries. https://fetchmux.com
+
+This is a buyer-research post, not a launch claim. Measure qualified replies and calls, not views or
+likes. Do not boost it with paid spend during the founding test.
 
 ## Do not use
 
@@ -137,4 +152,3 @@ Next action:
 
 Aggregate response rates only from messages actually sent. Draft rows and bounced messages are not
 conversations.
-

@@ -6,7 +6,7 @@ Update this file weekly. Empty cells are unknown, not zero and not success.
 
 | Gate | Deadline | Pass condition | Current evidence | Status |
 | --- | --- | --- | --- | --- |
-| Paid pain | Day 21 | 3 paid founding pilots | None yet | Open |
+| Paid pain | Day 21 after approved outreach begins | 3 paid founding pilots | None yet | Open |
 | Measurable value | Day 45 | 2 or more pilots improve an agreed metric | None yet | Open |
 | Repeatable revenue | Day 90 | 10 paying customers and about USD 2,000 MRR, or a better evidenced model | None yet | Open |
 | Sustainable delivery | Day 90 | Hosted infra below 20% of subscription revenue and support within guardrail | None yet | Open |
@@ -18,11 +18,14 @@ Update this file weekly. Empty cells are unknown, not zero and not success.
 | Customer / anonymous ID | |
 | Workload description | |
 | Queries per month | |
+| Representative queries available | |
 | Current provider(s) | |
 | Current monthly provider spend | |
+| Current monthly downstream context spend | |
 | Baseline policy-success rate | |
 | Baseline p95 latency | |
 | Baseline engineering hours per month | |
+| Plausible impact of one material retrieval failure | |
 | Agreed primary success metric | |
 | Agreed measurement method | |
 | Start date | |

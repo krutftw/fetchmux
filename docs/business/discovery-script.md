@@ -22,10 +22,10 @@ do not contact the person.
 
 ## Opening, two minutes
 
-> Thanks for making time. I am testing whether teams running AI workflows have a paid problem around
-> search-provider failures, cost, or maintaining more than one integration. I will ask about the way
-> you work today before showing anything. If it is not a real problem, saying that is useful. Please
-> do not share API keys, private customer queries, or anything regulated on this call.
+> Thanks for making time. I am testing a paid retrieval economics and reliability audit for teams
+> running AI workflows. I will ask about provider spend, downstream context cost, failures, and
+> integration work before showing anything. If it is not a real problem, saying that is useful.
+> Please do not share API keys, private customer queries, or anything regulated on this call.
 
 Confirm:
 
@@ -58,6 +58,8 @@ smart router help?” because it invites agreement rather than facts.
    revenue, or only developer inconvenience?
 6. Which is more valuable here: quality, resilience, lower total cost, or less engineering work?
 7. What would make this problem important enough to fund this month?
+8. Is the current impact at least one of: USD 500 per month in retrieval and downstream context
+   spend, eight engineering hours per month, or a plausible USD 1,000 consequence from one failure?
 
 Do not convert “annoying” into money. Ask for the actual consequence and leave it unknown when the
 prospect cannot quantify it.
@@ -74,10 +76,10 @@ prospect cannot quantify it.
 
 Only after a qualifying pain is established:
 
-> The pilot installs a customer-controlled retrieval gateway, baselines one metric on your workload,
-> and tests a deterministic cost, deadline, and fallback policy for 30 days. You keep your provider
-> accounts and pay their usage directly. The working price is USD 750 setup plus USD 99 for the first
-> month. If the agreed metric does not improve and the integration removes no measured work, the
+> The audit baselines one metric on your workload, installs a customer-controlled retrieval policy
+> only where it is useful, and tests cost, deadline, and fallback behavior for 30 days. You keep your
+> provider accounts and pay their usage directly. The working price is USD 750 setup plus USD 99 for
+> the first month. If the agreed metric does not improve and the work removes no measured effort, the
 > draft offer waives the USD 99 monthly charge, subject to the final agreement. Is that worth a
 > scoped technical review, not a commitment today?
 
@@ -110,7 +112,7 @@ Score each item 0, 1, or 2. A lead needs at least 9 of 12 and no hard disqualifi
 | --- | --- | --- | --- |
 | Workload | curiosity | near-production | recurring production/high-value |
 | Multi-provider need | none | possible | existing or funded plan |
-| Measurable pain | none | anecdotal | baseline and consequence exist |
+| Economic pain | none | below threshold or unknown | at least USD 500 monthly spend, eight monthly engineering hours, or USD 1,000 failure impact |
 | Data readiness | cannot share safely | partial | permitted representative set |
 | Technical fit | no owner/deployment path | uncertain | named owner and viable path |
 | Buying authority/timing | absent | indirect/later | authority and current budget |
@@ -121,6 +123,7 @@ Hard disqualifiers:
 - needs public comparative results that terms do not permit;
 - requests regulated or rights-sensitive use without review;
 - cannot identify a workload or outcome;
+- cannot quantify any material spend, engineering effort, or failure impact;
 - expects unpaid custom engineering;
 - needs an SLA or hosted multi-tenancy the founding build does not provide.
 
@@ -133,8 +136,11 @@ Public trigger and URL:
 Role and buying authority:
 Workflow and monthly volume:
 Current provider(s):
+Representative query count available:
+Monthly provider and downstream context spend:
+Engineering hours per month:
 Last concrete failure or cost event:
-Measured impact:
+Measured or plausible failure impact:
 Current alternative:
 Price reaction, exact words:
 Security/legal path:
@@ -146,4 +152,3 @@ Consent/retention note:
 
 Do not summarize “interested” as evidence. A dated action, access to a qualified technical review,
 or payment is evidence.
-
