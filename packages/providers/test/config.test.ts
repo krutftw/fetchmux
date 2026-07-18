@@ -12,17 +12,18 @@ describe("buildProviderRegistry", () => {
     const registry = buildProviderRegistry({ env: {}, fetch: unusedFetch, clock });
 
     expect(registry.providers).toEqual([]);
-    expect(registry.statuses).toHaveLength(4);
+    expect(registry.statuses).toHaveLength(5);
     expect(registry.statuses.every((status) => !status.available)).toBe(true);
     expect(registry.statuses.map((status) => status.id)).toEqual([
       "brave",
       "tavily",
       "exa",
       "firecrawl",
+      "crossref",
     ]);
   });
 
-  it("builds four matched adapters and profiles from customer-owned keys", () => {
+  it("builds matched BYOK and explicitly enabled public adapters", () => {
     const registry = buildProviderRegistry({
       env: {
         BRAVE_API_KEY: "brave-secret",
@@ -33,12 +34,14 @@ describe("buildProviderRegistry", () => {
         EXA_COST_PER_REQUEST_USD: "0.007",
         FIRECRAWL_API_KEY: "firecrawl-secret",
         FIRECRAWL_COST_PER_REQUEST_USD: "0.012",
+        CROSSREF_ENABLED: "true",
+        CROSSREF_CONTACT_EMAIL: "hello@fetchmux.com",
       },
       fetch: unusedFetch,
       clock,
     });
 
-    expect(registry.providers).toHaveLength(4);
+    expect(registry.providers).toHaveLength(5);
     expect(registry.providers.every(({ adapter, profile }) => adapter.id === profile.id)).toBe(
       true,
     );
@@ -57,6 +60,22 @@ describe("buildProviderRegistry", () => {
       tavily: 0.016,
       exa: 0.007,
       firecrawl: 0.012,
+      crossref: 0,
+    });
+  });
+
+  it("keeps Crossref unavailable until it is explicitly enabled with a valid contact", () => {
+    const registry = buildProviderRegistry({
+      env: { CROSSREF_ENABLED: "true", CROSSREF_CONTACT_EMAIL: "not-an-email" },
+      fetch: unusedFetch,
+      clock,
+    });
+
+    expect(registry.providers).toEqual([]);
+    expect(registry.statuses.find((status) => status.id === "crossref")).toMatchObject({
+      available: false,
+      costConfigured: true,
+      issues: ["CROSSREF_CONTACT_EMAIL must be a valid email address"],
     });
   });
 

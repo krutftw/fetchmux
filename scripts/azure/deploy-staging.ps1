@@ -5,7 +5,9 @@ param(
   [string]$SubscriptionId = '',
   [string]$Location = 'australiaeast',
   [string]$ResourceGroupName = 'rg-fetchmux-stg-aue',
-  [string]$OperatorCidr = ''
+  [string]$OperatorCidr = '',
+  [switch]$EnableCrossref,
+  [string]$CrossrefContactEmail = 'hello@fetchmux.com'
 )
 
 Set-StrictMode -Version Latest
@@ -83,6 +85,30 @@ function Resolve-OperatorCidr {
   }
 
   return "$($parsedAddress.IPAddressToString)/32"
+}
+
+function Assert-CrossrefConfiguration {
+  if (-not $EnableCrossref) {
+    return
+  }
+
+  $candidate = $CrossrefContactEmail.Trim()
+  if (
+    [string]::IsNullOrWhiteSpace($candidate) -or
+    $candidate.Contains("`r") -or
+    $candidate.Contains("`n")
+  ) {
+    throw 'CrossrefContactEmail must be a valid monitored email address.'
+  }
+
+  try {
+    $parsed = [System.Net.Mail.MailAddress]::new($candidate)
+  } catch {
+    throw 'CrossrefContactEmail must be a valid monitored email address.'
+  }
+  if ($parsed.Address -ne $candidate) {
+    throw 'CrossrefContactEmail must contain only one normalized email address.'
+  }
 }
 
 function Get-ProviderStates {
@@ -210,6 +236,7 @@ function Ensure-GatewaySecret {
 }
 
 Test-BicepTemplates
+Assert-CrossrefConfiguration
 
 if ($ValidateOnly) {
   [pscustomobject]@{
@@ -408,7 +435,9 @@ $appParameters = @(
   "image=$imageReference",
   "operatorCidr=$resolvedOperatorCidr",
   "registryName=$registryName",
-  "vaultName=$vaultName"
+  "vaultName=$vaultName",
+  "crossrefEnabled=$($EnableCrossref.IsPresent.ToString().ToLowerInvariant())",
+  "crossrefContactEmail=$($CrossrefContactEmail.Trim())"
 )
 Write-Host 'Running: az deployment group what-if'
 Invoke-AzPassThru -AzArguments (@(
@@ -438,11 +467,13 @@ $appDeployment = Invoke-AzJson -AzArguments (@(
   '--parameters'
 ) + $appParameters)
 
+$expectedProviderMode = if ($EnableCrossref) { 'crossref' } else { 'none' }
 & (Get-Command pwsh -ErrorAction Stop).Source -NoProfile -File $verifyScript `
   -SubscriptionId $SubscriptionId `
   -ResourceGroupName $ResourceGroupName `
   -ExpectedImage $imageReference `
-  -ExpectedOperatorCidr $resolvedOperatorCidr
+  -ExpectedOperatorCidr $resolvedOperatorCidr `
+  -ExpectedProviderMode $expectedProviderMode
 if ($LASTEXITCODE -ne 0) {
   throw 'Live staging verification failed.'
 }
@@ -461,4 +492,5 @@ if ($LASTEXITCODE -ne 0) {
   imageDigest = $imageDigest
   gitSha = $gitSha
   operatorCidr = $resolvedOperatorCidr
+  crossrefEnabled = $EnableCrossref.IsPresent
 } | ConvertTo-Json -Depth 4

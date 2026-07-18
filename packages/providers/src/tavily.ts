@@ -117,6 +117,7 @@ export function createTavilyProfile(options: TavilyProfileOptions): ProviderProf
       fresh_facts: 0.5,
       deep_research: 0.5,
       page_content: 0,
+      scholarly: 0,
     },
     baselineReliability: 0.5,
     baselineP95LatencyMs: 1_000,

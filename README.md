@@ -6,9 +6,9 @@ limits, normalizes the evidence, and returns an auditable route receipt.
 
 > One retrieval API. The right provider for every request.
 
-The founding product is deliberately narrow: web search and page retrieval through customer-owned
-provider accounts. It is not a generic API proxy, pooled-credit reseller, or claim that upstream
-APIs are interchangeable.
+The founding product is deliberately narrow: public-web search and page retrieval through
+customer-owned provider accounts, plus an opt-in public scholarly-metadata route. It is not a
+generic API proxy, pooled-credit reseller, or claim that upstream APIs are interchangeable.
 
 ## Status
 
@@ -22,13 +22,16 @@ What exists today:
 - deterministic policy ranking with task, cost, quality, latency, and reliability inputs;
 - hard pre-request budgets and absolute deadlines;
 - retryable-failure-only fallback and an in-memory circuit breaker;
-- BYOK adapters for Brave, Tavily, Exa, and Firecrawl;
+- BYOK adapters for Brave, Tavily, Exa, and Firecrawl, plus an explicit-opt-in Crossref scholarly
+  metadata adapter that needs no provider credential;
 - protected REST, typed TypeScript SDK, and read-only MCP interfaces;
 - a 24-case reproducible benchmark workload with a zero-network dry run;
 - a browser-tested founding site and local container packaging;
 - verified `hello@fetchmux.com` pilot intake and `security@fetchmux.com` vulnerability routing;
 - a live, operator-IP-restricted Azure staging gateway deployed by reproducible templates and
-  secret-safe scripts, with zero provider keys enabled.
+  secret-safe scripts, with zero provider keys enabled;
+- a protected, real-upstream proof through the hardened local production image using Crossref
+  scholarly metadata.
 
 What does not exist yet:
 
@@ -43,7 +46,8 @@ What does not exist yet:
 - Node.js 24 and npm 11;
 - Git;
 - Docker Desktop only if using the container path;
-- at least one supported provider key for a ready gateway.
+- at least one supported provider key, or an explicitly enabled Crossref configuration, for a ready
+  gateway.
 
 ## Quick start
 
@@ -66,6 +70,19 @@ $env:BRAVE_COST_PER_REQUEST_USD = "replace-with-your-real-cost"
 npm run dev:gateway
 ```
 
+For a no-provider-account technical proof, Crossref's public REST API can be enabled explicitly.
+Use a real monitored contact address as required by Crossref's polite-pool guidance:
+
+```powershell
+$env:FETCHMUX_API_KEY = "replace-with-a-long-random-gateway-key"
+$env:CROSSREF_ENABLED = "true"
+$env:CROSSREF_CONTACT_EMAIL = "replace-with-your-contact@example.com"
+npm run dev:gateway
+```
+
+Send the same request shape with `task = "scholarly"`. This route returns bibliographic metadata and
+DOI links only; it does not copy abstracts or provide page-content extraction.
+
 In another terminal:
 
 ```powershell
@@ -85,8 +102,9 @@ $body = @{
 Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8787/v1/search" -Headers $headers -Body $body
 ```
 
-`/health` reports process health. `/ready` returns `503` until at least one provider key is
-configured. Protected `/v1/*` routes return `503` if FetchMux authentication itself has no key.
+`/health` reports process health. `/ready` returns `503` until at least one credentialed provider or
+the valid opt-in Crossref route is configured. Protected `/v1/*` routes return `503` if FetchMux
+authentication itself has no key.
 
 ## Configuration
 
@@ -105,6 +123,8 @@ shell or use an operator-controlled process manager. Docker Compose reads the ig
 | `TAVILY_API_KEY` | none | Tavily customer credential |
 | `EXA_API_KEY` | none | Exa customer credential |
 | `FIRECRAWL_API_KEY` | none | Firecrawl customer credential |
+| `CROSSREF_ENABLED` | `false` | Exact `true` enables credential-free scholarly metadata egress |
+| `CROSSREF_CONTACT_EMAIL` | none | Valid monitored contact sent to Crossref's polite pool |
 | provider cost variables | none | Customer-plan estimates used by dollar budgets |
 | `VITE_PILOT_CONTACT_URL` | FetchMux pilot email | Optional safe `https:` or `mailto:` CTA override |
 
@@ -236,6 +256,7 @@ npm run dev:site
 - [Legal readiness checklist](docs/business/legal-readiness-checklist.md)
 - [Market evidence](docs/research/market-evidence.md)
 - [Source register](docs/research/source-register.md)
+- [Real-provider proof, 2026-07-18](docs/release/live-provider-proof-2026-07-18.md)
 
 ## Logging and persistence
 

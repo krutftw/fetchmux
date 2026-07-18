@@ -22,6 +22,7 @@ export const retrievalTaskSchema = z.enum([
   "fresh_facts",
   "deep_research",
   "page_content",
+  "scholarly",
 ]);
 export type RetrievalTask = z.infer<typeof retrievalTaskSchema>;
 

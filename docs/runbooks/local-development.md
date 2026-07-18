@@ -66,7 +66,7 @@ Invoke-RestMethod http://127.0.0.1:8787/health
 Invoke-WebRequest http://127.0.0.1:8787/ready -SkipHttpErrorCheck
 ```
 
-`/ready` returns `200` when at least one provider key exists and `503` otherwise. A configured cost
+`/ready` returns `200` when at least one provider route is available and `503` otherwise. A configured cost
 is not required for readiness.
 
 ## Call the protected API
@@ -158,7 +158,7 @@ Remove-Item Env:FETCHMUX_AUTH_DISABLED -ErrorAction SilentlyContinue
 | Symptom | Cause | Action |
 | --- | --- | --- |
 | `/v1/*` returns `503 NOT_READY` | No FetchMux gateway key | Set `FETCHMUX_API_KEY` or rotation keys |
-| `/ready` returns 503 | No provider key | Configure at least one provider key |
+| `/ready` returns 503 | No available provider | Configure one provider key, or explicitly enable Crossref with a valid contact email |
 | Preview has no eligible provider with a dollar budget | Cost estimate missing or over budget | Configure the actual account cost or remove the budget during diagnosis |
 | Browser has no CORS header | Origin not explicitly allowed | Set `FETCHMUX_ALLOWED_ORIGINS` to exact origins |
 | Port startup fails | Port in use or invalid | Set `FETCHMUX_PORT` to an integer from 1 through 65535 |

@@ -20,13 +20,14 @@ function provider(id: string, behavior: SearchBehavior, cost = 0.01): BenchmarkP
   const profile: ProviderProfile = {
     id,
     displayName: id.toUpperCase(),
-    supportedTasks: ["balanced", "fresh_facts", "deep_research", "page_content"],
+    supportedTasks: ["balanced", "fresh_facts", "deep_research", "page_content", "scholarly"],
     supportedFreshness: ["24h", "7d", "30d", "1y"],
     qualityByTask: {
       balanced: 0.8,
       fresh_facts: 0.8,
       deep_research: 0.8,
       page_content: 0.8,
+      scholarly: 0.8,
     },
     baselineReliability: 0.98,
     baselineP95LatencyMs: 1_000,

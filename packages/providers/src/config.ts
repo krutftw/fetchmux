@@ -6,7 +6,9 @@ import type {
   ProviderProfile,
   RetrievalTask,
 } from "@fetchmux/core";
+import { z } from "zod";
 import { BraveSearchAdapter, createBraveProfile } from "./brave.js";
+import { CrossrefSearchAdapter, createCrossrefProfile } from "./crossref.js";
 import { createExaProfile, ExaSearchAdapter } from "./exa.js";
 import { createFirecrawlProfile, FirecrawlSearchAdapter } from "./firecrawl.js";
 import { createTavilyProfile, TavilySearchAdapter } from "./tavily.js";
@@ -97,7 +99,42 @@ export function buildProviderRegistry(options: BuildProviderRegistryOptions): Pr
     createAdapter: (apiKey) => new FirecrawlSearchAdapter({ apiKey, fetch: options.fetch }),
   });
 
+  addCrossrefProvider(options, providers, statuses);
+
   return { providers, statuses };
+}
+
+function addCrossrefProvider(
+  options: BuildProviderRegistryOptions,
+  providers: ConfiguredProvider[],
+  statuses: ProviderStatus[],
+): void {
+  const profile = createCrossrefProfile();
+  const enabled = options.env.CROSSREF_ENABLED?.trim() === "true";
+  const contactResult = z.email().safeParse(options.env.CROSSREF_CONTACT_EMAIL?.trim());
+  const issues = enabled
+    ? contactResult.success
+      ? []
+      : ["CROSSREF_CONTACT_EMAIL must be a valid email address"]
+    : ["CROSSREF_ENABLED is not true"];
+  const available = enabled && contactResult.success;
+  statuses.push({
+    id: profile.id,
+    displayName: profile.displayName,
+    available,
+    costConfigured: true,
+    supportedTasks: profile.supportedTasks,
+    issues,
+  });
+  if (!available) return;
+  providers.push({
+    adapter: new CrossrefSearchAdapter({
+      contactEmail: contactResult.data,
+      fetch: options.fetch,
+      clock: options.clock,
+    }),
+    profile,
+  });
 }
 
 interface AddProviderOptions {

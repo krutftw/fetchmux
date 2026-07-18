@@ -4,7 +4,9 @@ param(
   [string]$ResourceGroupName = 'rg-fetchmux-stg-aue',
   [string]$AppName = 'ca-fetchmux-gateway-stg',
   [string]$ExpectedImage = '',
-  [string]$ExpectedOperatorCidr = ''
+  [string]$ExpectedOperatorCidr = '',
+  [ValidateSet('none', 'crossref')]
+  [string]$ExpectedProviderMode = 'none'
 )
 
 Set-StrictMode -Version Latest
@@ -60,6 +62,28 @@ function Invoke-HttpGet {
       Write-Host "Waiting for the scale-to-zero staging endpoint (attempt $attempt of $Attempts)."
       Start-Sleep -Seconds 5
     }
+  }
+}
+
+function Invoke-HttpPostJson {
+  param(
+    [Parameter(Mandatory)][string]$Uri,
+    [Parameter(Mandatory)][hashtable]$Headers,
+    [Parameter(Mandatory)][object]$Body
+  )
+
+  $json = $Body | ConvertTo-Json -Depth 6 -Compress
+  try {
+    return Invoke-WebRequest `
+      -Method Post `
+      -Uri $Uri `
+      -Headers $Headers `
+      -ContentType 'application/json' `
+      -Body $json `
+      -SkipHttpErrorCheck `
+      -TimeoutSec 45
+  } finally {
+    Remove-Variable json -ErrorAction SilentlyContinue
   }
 }
 
@@ -131,6 +155,21 @@ Assert-True ($minReplicas -eq 0) 'Staging must scale to zero.'
 Assert-True ($maxReplicas -eq 1) 'Staging must have a one-replica ceiling.'
 
 $container = $app.properties.template.containers[0]
+$environmentValues = @{}
+foreach ($entry in @($container.env)) {
+  if ($entry.PSObject.Properties.Name -contains 'value') {
+    $environmentValues[[string]$entry.name] = [string]$entry.value
+  }
+}
+if ($ExpectedProviderMode -eq 'crossref') {
+  Assert-True ($environmentValues['CROSSREF_ENABLED'] -eq 'true') 'Crossref must be explicitly enabled.'
+  Assert-True ($environmentValues['CROSSREF_CONTACT_EMAIL'] -match '^[^\s@]+@[^\s@]+\.[^\s@]+$') 'Crossref must have a valid monitored contact address.'
+} else {
+  Assert-True ($environmentValues['CROSSREF_ENABLED'] -ne 'true') 'Crossref must remain disabled in none mode.'
+}
+foreach ($providerKeyName in @('BRAVE_API_KEY', 'TAVILY_API_KEY', 'EXA_API_KEY', 'FIRECRAWL_API_KEY')) {
+  Assert-True (-not $environmentValues.ContainsKey($providerKeyName)) "$providerKeyName must not be stored directly in the Container App definition."
+}
 if ([string]::IsNullOrWhiteSpace($ExpectedImage)) {
   $gitSha = (& $script:GitCommand -C $repoRoot rev-parse HEAD).Trim()
   if ($LASTEXITCODE -ne 0) {
@@ -204,13 +243,50 @@ try {
   $unauthorizedStatus = [int]$unauthorizedResponse.StatusCode
   $authorizedStatus = [int]$authorizedResponse.StatusCode
   Assert-True ($healthStatus -eq 200) "Expected /health 200, received $healthStatus."
-  Assert-True ($readyStatus -eq 503) "Expected /ready 503 before provider configuration, received $readyStatus."
+  $expectedReadyStatus = if ($ExpectedProviderMode -eq 'crossref') { 200 } else { 503 }
+  Assert-True ($readyStatus -eq $expectedReadyStatus) "Expected /ready $expectedReadyStatus, received $readyStatus."
   Assert-True ($unauthorizedStatus -eq 401) "Expected unauthenticated /v1/providers 401, received $unauthorizedStatus."
   Assert-True ($authorizedStatus -eq 200) "Expected authenticated /v1/providers 200, received $authorizedStatus."
 
   $providerBody = $authorizedResponse.Content | ConvertFrom-Json
   $availableProviders = @($providerBody.data.providers | Where-Object available)
-  Assert-True ($availableProviders.Count -eq 0) 'No provider may be enabled before an operator-owned provider key is approved.'
+  $searchStatus = $null
+  $selectedProvider = $null
+  $resultCount = $null
+  $estimatedCostUsd = $null
+  $fallbackUsed = $null
+  if ($ExpectedProviderMode -eq 'crossref') {
+    Assert-True ($availableProviders.Count -eq 1) 'Crossref mode must expose exactly one available provider.'
+    Assert-True ($availableProviders[0].id -eq 'crossref') 'Crossref mode exposed an unexpected provider.'
+    Assert-True (@($availableProviders[0].supportedTasks) -contains 'scholarly') 'Crossref must advertise the scholarly task.'
+    Assert-True (@($availableProviders[0].issues).Count -eq 0) 'Crossref configuration reported an issue.'
+
+    $searchResponse = Invoke-HttpPostJson -Uri "$baseUri/v1/search" -Headers @{
+      Authorization = "Bearer $gatewayKey"
+    } -Body @{
+      query = 'retrieval augmented generation'
+      task = 'scholarly'
+      priority = 'cost'
+      maxCostUsd = 0.001
+      maxLatencyMs = 20000
+      limit = 2
+      providerAllowlist = @('crossref')
+    }
+    $searchStatus = [int]$searchResponse.StatusCode
+    Assert-True ($searchStatus -eq 200) "Expected protected scholarly search 200, received $searchStatus."
+    $searchBody = $searchResponse.Content | ConvertFrom-Json
+    $selectedProvider = [string]$searchBody.data.route.selectedProvider
+    $resultCount = @($searchBody.data.results).Count
+    $estimatedCostUsd = [decimal]$searchBody.data.route.estimatedCostUsd
+    $fallbackUsed = [bool]$searchBody.data.route.fallbackUsed
+    Assert-True ($selectedProvider -eq 'crossref') 'The scholarly proof selected an unexpected provider.'
+    Assert-True ($resultCount -gt 0) 'The scholarly proof returned no results.'
+    Assert-True ($estimatedCostUsd -eq 0) 'The Crossref upstream API charge estimate must be zero.'
+    Assert-True (-not $fallbackUsed) 'The Crossref proof unexpectedly used fallback.'
+    Assert-True (-not [string]::IsNullOrWhiteSpace([string]$searchBody.data.route.traceId)) 'The scholarly proof returned no trace ID.'
+  } else {
+    Assert-True ($availableProviders.Count -eq 0) 'None mode must expose zero available providers.'
+  }
 
   [pscustomobject]@{
     verifiedAtUtc = [DateTimeOffset]::UtcNow.ToString('o')
@@ -232,11 +308,18 @@ try {
     readyStatus = $readyStatus
     unauthorizedStatus = $unauthorizedStatus
     authorizedStatus = $authorizedStatus
-    availableProviders = $availableProviders.Count
+    availableProviders = @($availableProviders.id)
+    searchStatus = $searchStatus
+    selectedProvider = $selectedProvider
+    resultCount = $resultCount
+    estimatedCostUsd = $estimatedCostUsd
+    fallbackUsed = $fallbackUsed
   } | ConvertTo-Json -Depth 4
 } finally {
   Remove-Variable gatewayKey -ErrorAction SilentlyContinue
   Remove-Variable secretResponse -ErrorAction SilentlyContinue
   Remove-Variable vaultToken -ErrorAction SilentlyContinue
   Remove-Variable headers -ErrorAction SilentlyContinue
+  Remove-Variable searchBody -ErrorAction SilentlyContinue
+  Remove-Variable searchResponse -ErrorAction SilentlyContinue
 }

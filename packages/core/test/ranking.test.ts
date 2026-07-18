@@ -9,6 +9,7 @@ const tasks: readonly RetrievalTask[] = [
   "fresh_facts",
   "deep_research",
   "page_content",
+  "scholarly",
 ];
 
 function request(overrides: Partial<SearchRequest> = {}): SearchRequest {
@@ -21,6 +22,7 @@ interface ProfileOverrides {
   cost?: number | null;
   latency?: number;
   reliability?: number;
+  supportsRequest?: (request: SearchRequest) => boolean;
 }
 
 function profile(id: string, overrides: ProfileOverrides = {}): ProviderProfile {
@@ -29,11 +31,15 @@ function profile(id: string, overrides: ProfileOverrides = {}): ProviderProfile 
     displayName: id.toUpperCase(),
     supportedTasks: overrides.tasks ?? tasks,
     supportedFreshness: ["24h", "7d", "30d", "1y"],
+    ...(overrides.supportsRequest === undefined
+      ? {}
+      : { supportsRequest: overrides.supportsRequest }),
     qualityByTask: {
       balanced: 0.7,
       fresh_facts: 0.7,
       deep_research: 0.7,
       page_content: 0.7,
+      scholarly: 0.7,
       ...overrides.quality,
     },
     baselineReliability: overrides.reliability ?? 0.98,
@@ -81,6 +87,25 @@ describe("rankProviders", () => {
     ]);
 
     expect(ranked.map((entry) => entry.providerId)).toEqual(["content"]);
+  });
+
+  it("excludes providers that cannot honor provider-specific request controls", () => {
+    expect.assertions(2);
+
+    try {
+      rankProviders(request({ task: "scholarly", includeDomains: ["example.org"] }), [
+        candidate("metadata-only", {
+          tasks: ["scholarly"],
+          cost: 0,
+          supportsRequest: (candidateRequest) => candidateRequest.includeDomains === undefined,
+        }),
+      ]);
+    } catch (error) {
+      expect(error).toMatchObject({ code: "NO_ELIGIBLE_PROVIDER", statusCode: 422 });
+      expect((error as FetchMuxError).details).toEqual({
+        exclusions: { "metadata-only": ["UNSUPPORTED_CONTROLS"] },
+      });
+    }
   });
 
   it("excludes unknown costs from a hard-dollar route", () => {

@@ -1,11 +1,15 @@
 # FetchMux Operating Plan
 
-**Date:** 2026-07-16<br>
+**Date:** 2026-07-18<br>
 **Planning horizon:** First 90 days
 
 ## Business thesis
 
-FetchMux earns money by reducing the cost and operational risk of multi-provider retrieval for AI teams. The initial product is software and decision intelligence, not marked-up API credits. This keeps the gross-margin model understandable and avoids relying on provider resale rights that do not yet exist.
+FetchMux earns money first through a customer-specific retrieval economics and reliability audit,
+then through software that keeps the proven policy running. The gateway is the delivery mechanism,
+not the commercial claim. The initial product is decision intelligence and customer-controlled
+software, not marked-up API credits. This keeps the gross-margin model understandable and avoids
+relying on provider resale rights that do not yet exist.
 
 The long-term asset is a task-level dataset connecting request characteristics, provider behaviour, cost, latency, evidence quality, and customer outcomes. The interface is useful on day one; the routing advantage compounds only if customers consent to outcome telemetry and the data is handled safely.
 
@@ -14,7 +18,8 @@ The long-term asset is a task-level dataset connecting request characteristics, 
 ### Founding pilot
 
 - **Price:** USD 750 setup plus USD 99 for the first month.
-- **Customer supplies:** provider accounts, keys, a representative query set, and one measurable success metric.
+- **Customer supplies:** provider accounts, keys, 50 to 250 representative queries, current cost or
+  incident evidence, and one measurable success metric.
 - **FetchMux supplies:** integration, baseline benchmark, routing configuration, weekly scorecard, and an end-of-pilot ROI report.
 - **Guarantee:** if no agreed metric improves and the integration has not reduced engineering work, waive the first monthly charge. Setup pays for real integration labour and is not positioned as a refundable deposit.
 
@@ -48,7 +53,8 @@ FetchMux will not subsidize usage to manufacture adoption.
 
 ## Acquisition loop
 
-The primary acquisition motion is a manually qualified, paid retrieval reliability pilot. Public
+The primary acquisition motion is a manually qualified, paid retrieval economics and reliability
+audit delivered as a 30-day pilot. Public
 provider league tables are not a founding distribution asset: current provider terms can restrict
 performance disclosure, result retention, or benchmarking. Comparative publication requires
 provider-specific counsel review and any necessary written permission.
@@ -65,7 +71,7 @@ provider-specific counsel review and any necessary written permission.
 Secondary channels:
 
 - technical launch posts and provider-approved or provider-neutral scorecards;
-- GitHub examples and issue-driven integrations;
+- public code examples and issue-driven integrations on the approved project forge;
 - MCP directories and agent-framework templates;
 - provider partner directories after acceptance;
 - targeted founder-led outreach to teams already discussing retrieval reliability or spend.
@@ -77,9 +83,13 @@ No fake waitlist, bought followers, invented customer logos, or benchmark conclu
 A lead qualifies only if it has:
 
 - a recurring production or near-production retrieval workload;
-- at least 500 retrieval calls per month or a high-value low-volume workflow;
-- access to representative queries and a human or system outcome signal;
-- authority to connect at least one provider and evaluate a second;
+- at least two providers already involved, or an active and funded decision about changing or adding
+  a provider;
+- at least one material economic signal: USD 500 or more in monthly retrieval and downstream context
+  spend, eight or more engineering hours per month on retrieval integration or incidents, or a
+  plausible single retrieval failure worth at least USD 1,000;
+- permission to supply at least 50 representative queries and a human or system outcome signal;
+- authority to connect the current provider, evaluate an alternative, and approve USD 849;
 - a measurable pain in cost, failure rate, answer quality, or engineering maintenance.
 
 Disqualify curiosity-only users who cannot supply a workload. The open benchmark and SDK serve them without consuming pilot capacity.
@@ -154,7 +164,8 @@ A retrieval is successful only when it completes inside declared latency and cos
 Do not protect the original idea from evidence.
 
 - If fewer than three qualified buyers pay within 21 days of active outreach, narrow the segment or replace the offer.
-- If multi-provider routing cannot improve a meaningful customer metric by day 45, pivot to the benchmark/observability layer or stop.
+- If multi-provider routing cannot improve a meaningful customer metric by day 45, sell the audit
+  and change-testing layer without a persistent router, or stop.
 - If most buyers only want a cheaper pooled API key, do not provide it without resale rights; test referral or marketplace economics instead.
 - If support effort prevents acceptable margins, make the deployment more self-serve or move upmarket.
 - If one provider consistently dominates all real customer workloads, sell provider evaluation/migration tooling rather than pretending dynamic routing is valuable.

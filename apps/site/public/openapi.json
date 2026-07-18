@@ -528,10 +528,12 @@
             "type": "string"
           },
           "available": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True when the provider has valid runtime configuration and can be selected."
           },
           "costConfigured": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "True when the upstream API charge is configured or known to be zero."
           },
           "supportedTasks": {
             "type": "array",
@@ -658,7 +660,8 @@
           "balanced",
           "fresh_facts",
           "deep_research",
-          "page_content"
+          "page_content",
+          "scholarly"
         ],
         "default": "balanced"
       },

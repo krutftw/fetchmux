@@ -20,8 +20,10 @@ launch, production service, multi-tenant control plane, or provider benchmark.
 | Container Apps environment | Consumption | No dedicated workload profile |
 | Gateway app | `0.25` vCPU, `0.5 GiB`, scale `0..1` | TLS only; one operator IPv4 `/32` allow rule |
 
-The process probe is `/health`. `/ready` is expected to return `503` because no approved provider
-key is present. Protected `/v1/*` endpoints still require the Key Vault-backed FetchMux key.
+The process probe is `/health`. The currently recorded 2026-07-17 revision returns `503` from
+`/ready` because it predates the optional Crossref route and has no provider key. A deployment with
+`-EnableCrossref` is expected to return `200` and advertise only `crossref`. Protected `/v1/*`
+endpoints always require the Key Vault-backed FetchMux key.
 
 ## Verified billing guardrails
 
@@ -83,7 +85,10 @@ npm run typecheck
 npm run lint
 npm run lint:openapi
 npm run build
-pwsh -NoProfile -File scripts/azure/deploy-staging.ps1 -Apply
+pwsh -NoProfile -File scripts/azure/deploy-staging.ps1 `
+  -Apply `
+  -EnableCrossref `
+  -CrossrefContactEmail hello@fetchmux.com
 ```
 
 The script then performs this sequence:
@@ -95,7 +100,8 @@ The script then performs this sequence:
 4. build `fetchmux-gateway:<full-git-sha>` with the local Docker engine, authenticate to ACR through
    Microsoft Entra ID, push the tag, and resolve its registry digest;
 5. show resource-group `what-if` and deploy the app;
-6. run secret-safe Azure and HTTPS read-back.
+6. run secret-safe Azure and HTTPS read-back, including one protected scholarly search when
+   Crossref is explicitly enabled.
 
 The image tag is the complete Git commit, and the Container App is pinned to the resulting
 `sha256` manifest digest. The scripts never deploy `latest` or a mutable environment tag. Azure
@@ -105,7 +111,10 @@ local build-and-push path avoids both that unsupported feature and its task-dura
 ## Verify independently
 
 ```powershell
-pwsh -NoProfile -File scripts/azure/verify-staging.ps1
+pwsh -NoProfile -File scripts/azure/verify-staging.ps1 -ExpectedProviderMode none
+
+# After an explicit Crossref deployment:
+pwsh -NoProfile -File scripts/azure/verify-staging.ps1 -ExpectedProviderMode crossref
 ```
 
 The command must confirm:
@@ -116,9 +125,12 @@ The command must confirm:
 - TLS-only ingress with one IPv4 `/32` allow rule;
 - scale from zero to one;
 - the exact full-commit registry tag resolved to the digest used by the app;
-- HTTP `200` for `/health`, `503` for `/ready`, `401` for unauthenticated `/v1/providers`, and
-  `200` for authenticated `/v1/providers`;
-- zero available providers until separately approved credentials exist.
+- HTTP `200` for `/health`, `401` for unauthenticated `/v1/providers`, and `200` for authenticated
+  `/v1/providers`;
+- in `none` mode, `/ready` is `503` and no provider is available;
+- in `crossref` mode, `/ready` is `200`, Crossref is the only available provider, and one protected
+  `scholarly` request returns at least one result, a Crossref route receipt, no fallback, and a USD 0
+  upstream API-charge estimate.
 
 The final JSON contains resource names, status codes, revision, image, and FQDN. It does not contain
 the gateway key.

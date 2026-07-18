@@ -13,9 +13,14 @@ credits, hide upstream billing, or infer a customer's price from public marketin
 | Tavily | `TAVILY_API_KEY` | `TAVILY_COST_PER_CREDIT_USD` | provider credit; quality mode estimates two credits |
 | Exa | `EXA_API_KEY` | `EXA_COST_PER_REQUEST_USD` | one FetchMux search request |
 | Firecrawl | `FIRECRAWL_API_KEY` | `FIRECRAWL_COST_PER_REQUEST_USD` | one FetchMux search request |
+| Crossref Metadata | none; `CROSSREF_ENABLED=true` and `CROSSREF_CONTACT_EMAIL` | none | zero upstream API charge; scholarly metadata only |
 
 These cost inputs are operator configuration, not FetchMux price claims. Reconcile them against the
 customer's current provider plan, tier, discounts, overages, taxes, and credit rules.
+
+Crossref is the deliberate exception to BYOK credentials. Its public REST API requires no signup or
+API key. FetchMux keeps it disabled by default, requires a valid contact email, identifies itself in
+the request, and uses it only for `scholarly` metadata. It does not retrieve or copy abstracts.
 
 ## Add a provider
 
@@ -47,13 +52,31 @@ Invoke-RestMethod http://127.0.0.1:8787/v1/providers -Headers $headers
 
 Each entry contains:
 
-- `available`: a non-blank provider key exists;
-- `costConfigured`: the cost variable parsed as a positive finite number;
+- `available`: the provider has a non-blank key, or Crossref has valid explicit opt-in settings;
+- `costConfigured`: the provider has a valid cost input, or its upstream API charge is known to be
+  zero;
 - `supportedTasks`: adapter capability profile used by eligibility filtering;
 - `issues`: safe missing or invalid variable names, never variable values.
 
 Readiness depends on `available`, not `costConfigured`. A provider with a key and unknown cost can
 serve a request without `maxCostUsd`; it is excluded when a hard dollar budget is supplied.
+
+### Enable the Crossref proof route
+
+```powershell
+$env:CROSSREF_ENABLED = "true"
+$env:CROSSREF_CONTACT_EMAIL = "replace-with-your-contact@example.com"
+npm run dev:gateway
+```
+
+Use `task: "scholarly"`. Crossref is excluded before a network call if a request asks for page
+content, country, language, or domain filtering, because this adapter does not promise those shared
+controls. Its zero estimate means zero Crossref API charge, not zero FetchMux compute, support, or
+downstream-model cost.
+
+The adapter also enforces Crossref's documented per-client ceiling locally: no more than three
+concurrent calls and no more than ten starts in a rolling second. The Azure staging template has a
+one-replica ceiling, so that per-process guard is also the staging deployment's aggregate guard.
 
 ## Validate cost profiles
 

@@ -104,6 +104,7 @@ function provider(
       fresh_facts: options.quality ?? 0.8,
       deep_research: options.quality ?? 0.8,
       page_content: options.quality ?? 0.8,
+      scholarly: options.quality ?? 0.8,
     },
     baselineReliability: 0.98,
     baselineP95LatencyMs: options.latency ?? 1_000,

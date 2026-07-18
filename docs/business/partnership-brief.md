@@ -18,7 +18,7 @@ deadline, routing, and fallback rules.
 
 - deterministic router with hard pre-request budget and absolute deadline accounting;
 - retryable-failure-only fallback and circuit breaking;
-- BYOK adapters for Brave, Tavily, Exa, and Firecrawl;
+- BYOK adapters for Brave, Tavily, Exa, and Firecrawl, plus opt-in Crossref metadata;
 - REST, TypeScript SDK, and read-only MCP tools;
 - safe provider status and auditable route receipts;
 - reproducible private benchmark runner with a zero-network dry mode;
@@ -137,4 +137,3 @@ Be ready to supply, without secrets or customer data:
 - [ ] Brand wording and attachments contain no false relationship claim.
 - [ ] Volume numbers come from real records.
 - [ ] No customer name, workload, output, key, or result is disclosed without permission.
-

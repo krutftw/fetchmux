@@ -148,7 +148,8 @@ The founding release is BYOK and local/self-hostable first.
 - per-request budget and deadline enforcement;
 - transient-failure classification, fallback, and circuit breaking;
 - normalized result schema and route receipts;
-- Brave, Tavily, Exa, and Firecrawl BYOK adapters;
+- Brave, Tavily, Exa, and Firecrawl BYOK adapters, plus an opt-in Crossref scholarly-metadata
+  adapter;
 - REST endpoints and MCP tools;
 - offline fixtures and an opt-in live benchmark runner;
 - a private customer benchmark report format and a public methodology, subject to provider terms;

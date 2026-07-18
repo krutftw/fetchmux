@@ -26,28 +26,33 @@ site and intake must never request provider keys or private queries.
 | Area | Evidence | Decision |
 | --- | --- | --- |
 | Retrieval core | Deterministic routing, hard budgets and deadlines, safe fallback, route receipts | Pilot-ready |
-| Provider surface | BYOK adapters for Brave, Tavily, Exa, and Firecrawl against current official endpoints | Pilot-ready, account terms still checked per customer |
+| Provider surface | BYOK adapters for Brave, Tavily, Exa, and Firecrawl plus explicit-opt-in Crossref scholarly metadata | Pilot-ready, account terms still checked per customer |
 | Interfaces | Authenticated REST, typed TypeScript SDK, read-only MCP, versioned OpenAPI | Pilot-ready |
 | Packaging | Non-root container, reproducible Azure templates, single-tenant runbooks | Pilot-ready |
 | Public discovery | Human site, OpenAPI, `llms.txt`, robots, sitemap, canonical metadata | Live |
 | Intake | Explicit `hello@` and `security@` routes, verified destination, disabled catch-all | Live |
 | Payment tooling | Official Stripe skill, CLI, curated plugin, and OAuth MCP installed; application-only site | Test preparation only |
 | Staging | HTTPS health responds; readiness deliberately fails with zero provider keys; auth blocks anonymous protected calls | Safe but not a live-provider proof |
+| Next staging deployment | Bicep and PowerShell now support explicit Crossref enablement and a protected live-search read-back | Locally validated; Azure apply blocked until the owner refreshes the CLI session required by Entra security defaults |
+| Real upstream proof | Protected local request routed through FetchMux to Crossref and returned two DOI results with a receipt | Passed locally; not yet an Azure or customer-provider proof |
 | Demand | No qualified interviews, paid pilots, customer outcomes, or recurring revenue | Unproven |
 | Hosted SaaS | No tenant isolation, quotas, billing, abuse controls, or durable telemetry | Not ready |
 
 ## Verification at decision time
 
-- 27 Vitest files passed with 220 tests and no failures.
+- 28 Vitest files passed with 231 tests and no failures.
 - Workspace TypeScript, Biome, OpenAPI lint, production build, and `git diff --check` passed.
-- `npm audit --audit-level=low` reported zero vulnerabilities; full-history Gitleaks scanned 49
-  commits and reported no leaks.
+- `npm audit --audit-level=low` reported zero vulnerabilities; full-history Gitleaks scanned 50
+  commits and both history and working-tree scans reported no leaks.
 - The founding benchmark validated 24 cases across four providers: 96 planned calls, zero executed
   calls, and zero network calls.
 - The 57 MB production image ran as `nonroot` with a read-only root filesystem, all capabilities
   dropped, and `no-new-privileges`. Health returned 200; readiness returned the deliberate 503 with
   no provider; protected routes remained unavailable without authentication configuration.
 - Docker Scout indexed 78 packages and reported zero critical, high, medium, or low findings.
+- The updated 57,121,143-byte production image ran as `nonroot` with a read-only root filesystem,
+  all capabilities dropped, and `no-new-privileges`; a protected Crossref request returned two
+  results and its query, bearer value, and result content were absent from container logs.
 - The new multiplexer favicon was rendered and inspected at 16, 32, and 64 pixels; the site brand
   mark uses the same three-input, one-output geometry.
 - Cloudflare Email Routing read-back confirmed routing enabled, both explicit aliases present, a
@@ -55,6 +60,10 @@ site and intake must never request provider keys or private queries.
 - Stripe's official best-practices skill and CLI are installed, the curated Stripe plugin is
   enabled, and the official remote MCP OAuth session is authenticated. No live product, price,
   payment link, subscription, or tax registration was created.
+- A loopback-only gateway enabled Crossref explicitly, reported ready, and completed one protected
+  scholarly request with two normalized DOI results, no fallback, a route receipt, and an estimated
+  upstream API charge of USD 0. The process was stopped after verification. See the
+  [real-provider proof](live-provider-proof-2026-07-18.md).
 
 ## Gates before the first invoice
 

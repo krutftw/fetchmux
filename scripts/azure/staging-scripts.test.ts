@@ -72,6 +72,17 @@ describe("Azure staging operations contract", () => {
     expect(verify).toContain("PSObject.Properties.Name -notcontains 'value'");
   });
 
+  it("deploys and verifies the opt-in Crossref route without exposing response content", () => {
+    expect(deploy).toContain("[switch]$EnableCrossref");
+    expect(deploy).toContain("crossrefEnabled=");
+    expect(deploy).toContain("crossrefContactEmail=");
+    expect(verify).toContain("ExpectedProviderMode");
+    expect(verify).toContain("/v1/search");
+    expect(verify).toContain("selectedProvider");
+    expect(verify).toContain("estimatedCostUsd");
+    expect(verify).not.toMatch(/Write-(Host|Output)[^\n]*(?:query|title|url)/i);
+  });
+
   it("never invokes a browser", () => {
     expect(combined).not.toMatch(/Start-Process|chrome|msedge|firefox|browser/i);
   });

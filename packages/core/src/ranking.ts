@@ -5,6 +5,7 @@ import type { ProviderProfile } from "./provider.js";
 export type ProviderExclusionCode =
   | "PROVIDER_NOT_ALLOWED"
   | "UNSUPPORTED_TASK"
+  | "UNSUPPORTED_CONTROLS"
   | "UNSUPPORTED_FRESHNESS"
   | "COST_UNKNOWN"
   | "COST_EXCEEDS_BUDGET"
@@ -100,6 +101,9 @@ export function rankProviders(
       reasons.push("PROVIDER_NOT_ALLOWED");
     }
     if (!profile.supportedTasks.includes(request.task)) reasons.push("UNSUPPORTED_TASK");
+    if (profile.supportsRequest && !profile.supportsRequest(request)) {
+      reasons.push("UNSUPPORTED_CONTROLS");
+    }
     if (request.freshness && !profile.supportedFreshness.includes(request.freshness)) {
       reasons.push("UNSUPPORTED_FRESHNESS");
     }

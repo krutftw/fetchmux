@@ -61,7 +61,7 @@ export const benchmarkCaseSchema = z
     query: z.string().trim().min(1).max(400).optional(),
     privateQueryRef: identifierSchema.optional(),
     workloadClass: benchmarkClassSchema,
-    task: z.enum(["balanced", "fresh_facts", "deep_research", "page_content"]),
+    task: z.enum(["balanced", "fresh_facts", "deep_research", "page_content", "scholarly"]),
     freshness: z.enum(["24h", "7d", "30d", "1y"]).optional(),
     expectedSourceHints: z.array(hostnameSchema).max(20).default([]),
     humanLabels: z.record(identifierSchema, humanLabelSchema).default({}),

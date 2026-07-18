@@ -1,7 +1,7 @@
 # FetchMux founding pilot
 
-**Status:** internal commercial draft  
-**Offer version:** 2026-07-16  
+**Status:** internal commercial draft<br>
+**Offer version:** 2026-07-18<br>
 **Price hypothesis:** USD 750 setup plus USD 99 for the first month
 
 This is a sales and delivery specification, not a contract, quote, tax invoice, warranty, or legal
@@ -22,15 +22,19 @@ customer from buying unnecessary infrastructure.
 A pilot customer must have all of the following:
 
 - a production or near-production AI workflow that retrieves current web evidence;
-- at least 500 monthly retrievals, or a lower-volume workflow where a failure is materially costly;
-- one existing provider account and authority to evaluate a second where needed;
-- a representative query set that can be used under the provider and source-site terms;
+- at least two providers already involved, or an active and funded decision about changing or adding
+  a provider;
+- at least one material economic signal: USD 500 or more in monthly retrieval and downstream context
+  spend, eight or more engineering hours per month on retrieval integration or incidents, or a
+  plausible single retrieval failure worth at least USD 1,000;
+- at least 50 representative queries that can be used under the provider and source-site terms;
 - one measurable baseline and someone who can judge the outcome;
 - a technical owner who can deploy a single-tenant service or integrate REST, TypeScript, or MCP;
 - authority and budget to approve the pilot.
 
-Disqualify a lead that wants pooled credits, hidden provider identity, automated account creation,
-regulated decision-making without review, a public provider comparison, or a free custom build.
+Disqualify a lead that cannot quantify any economic pain, wants pooled credits, hidden provider
+identity, automated account creation, regulated decision-making without review, a public provider
+comparison, or a free custom build.
 
 ## Commercial shape
 

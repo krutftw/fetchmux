@@ -22,7 +22,7 @@ describe("FetchMux launch site", () => {
         name: /stop wiring search providers into your agent/i,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Bring your own keys")).toBeInTheDocument();
+    expect(screen.getByText("Customer keys + public metadata")).toBeInTheDocument();
     expect(screen.getByText(/interface example only/i)).toBeInTheDocument();
     expect(screen.getByText(/no partnership or resale right is claimed/i)).toBeInTheDocument();
 
@@ -197,6 +197,8 @@ describe("FetchMux launch site", () => {
     fireEvent.click(screen.getByRole("button", { name: "Copy REST / search" }));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledOnce());
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('"maxLatencyMs": 2000'));
+    expect(writeText).not.toHaveBeenCalledWith(expect.stringContaining("deadlineMs"));
     expect(screen.getByRole("button", { name: "REST / search copied" })).toBeInTheDocument();
   });
 });

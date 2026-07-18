@@ -36,6 +36,7 @@ export interface ProviderProfile {
   readonly supportedTasks: readonly RetrievalTask[];
   readonly supportedFreshness: readonly Freshness[];
   readonly qualityByTask: QualityByTask;
+  readonly supportsRequest?: (request: SearchRequest) => boolean;
   readonly baselineReliability: number;
   readonly baselineP95LatencyMs: number;
   estimateCostUsd(request: SearchRequest): number | null;

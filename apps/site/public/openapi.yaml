@@ -328,8 +328,10 @@ components:
           type: string
         available:
           type: boolean
+          description: True when the provider has valid runtime configuration and can be selected.
         costConfigured:
           type: boolean
+          description: True when the upstream API charge is configured or known to be zero.
         supportedTasks:
           type: array
           uniqueItems: true
@@ -409,7 +411,7 @@ components:
       default: balanced
     RetrievalTask:
       type: string
-      enum: [balanced, fresh_facts, deep_research, page_content]
+      enum: [balanced, fresh_facts, deep_research, page_content, scholarly]
       default: balanced
     Hostname:
       type: string

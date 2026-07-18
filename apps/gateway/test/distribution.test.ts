@@ -127,6 +127,8 @@ function safeProcessEnvironment(): NodeJS.ProcessEnv {
     "TAVILY_API_KEY",
     "EXA_API_KEY",
     "FIRECRAWL_API_KEY",
+    "CROSSREF_ENABLED",
+    "CROSSREF_CONTACT_EMAIL",
     "BRAVE_COST_PER_REQUEST_USD",
     "TAVILY_COST_PER_CREDIT_USD",
     "EXA_COST_PER_REQUEST_USD",

@@ -13,7 +13,7 @@ const restExample = `curl http://127.0.0.1:8787/v1/search \\
     "query": "latest Node.js release",
     "task": "fresh_facts",
     "maxCostUsd": 0.02,
-    "deadlineMs": 2000
+    "maxLatencyMs": 2000
   }'`;
 
 const mcpExample = `{
@@ -147,8 +147,9 @@ export function App({ pilotContactUrl }: AppProps) {
               <li>Tavily</li>
               <li>Exa</li>
               <li>Firecrawl</li>
+              <li>Crossref</li>
             </ul>
-            <span>Bring your own keys</span>
+            <span>Customer keys + public metadata</span>
           </div>
         </section>
 
@@ -194,6 +195,7 @@ export function App({ pilotContactUrl }: AppProps) {
                   <li>Technical docs</li>
                   <li>Deep research</li>
                   <li>Page content</li>
+                  <li>Scholarly metadata</li>
                 </ul>
               </article>
             </div>

@@ -24,6 +24,12 @@ param environmentName string = 'cae-fetchmux-stg-aue'
 @description('Staging Container App name.')
 param appName string = 'ca-fetchmux-gateway-stg'
 
+@description('Explicitly enable the credential-free Crossref scholarly metadata route.')
+param crossrefEnabled bool = false
+
+@description('Monitored contact address sent to Crossref for identified polite-pool requests.')
+param crossrefContactEmail string = ''
+
 @description('Tags applied to the staging Container App.')
 param tags object = {
   application: 'fetchmux'
@@ -119,6 +125,14 @@ resource gateway 'Microsoft.App/containerApps@2025-07-01' = {
               name: 'FETCHMUX_API_KEY'
               secretRef: 'fetchmux-api-key'
             }
+            {
+              name: 'CROSSREF_ENABLED'
+              value: crossrefEnabled ? 'true' : 'false'
+            }
+            {
+              name: 'CROSSREF_CONTACT_EMAIL'
+              value: crossrefContactEmail
+            }
           ]
           resources: {
             cpu: json('0.25')
@@ -182,4 +196,3 @@ output fqdn string = gateway.properties.configuration.ingress.fqdn
 output latestRevisionName string = gateway.properties.latestRevisionName
 output image string = image
 output operatorCidr string = operatorCidr
-

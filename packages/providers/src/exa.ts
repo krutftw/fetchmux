@@ -133,6 +133,7 @@ export function createExaProfile(options: ExaProfileOptions): ProviderProfile {
       fresh_facts: 0.5,
       deep_research: 0.5,
       page_content: 0.5,
+      scholarly: 0,
     },
     baselineReliability: 0.5,
     baselineP95LatencyMs: 1_000,

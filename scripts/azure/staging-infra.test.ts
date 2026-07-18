@@ -58,6 +58,14 @@ describe("Azure staging infrastructure contract", () => {
     expect(app).not.toContain("path: '/ready'");
   });
 
+  it("makes the credential-free Crossref proof an explicit deployment setting", () => {
+    expect(app).toContain("param crossrefEnabled bool = false");
+    expect(app).toContain("param crossrefContactEmail string = ''");
+    expect(app).toContain("name: 'CROSSREF_ENABLED'");
+    expect(app).toContain("name: 'CROSSREF_CONTACT_EMAIL'");
+    expect(app).not.toMatch(/crossref[^\n]{0,80}secretRef/i);
+  });
+
   it("keeps local and non-runtime files out of remote image builds", () => {
     for (const path of [
       ".git",

@@ -1,7 +1,7 @@
 # FetchMux market evidence and founding decision
 
-**Decision date:** 2026-07-16  
-**Decision:** proceed to paid validation, not public launch  
+**Decision date:** 2026-07-18<br>
+**Decision:** proceed to paid validation, not public launch<br>
 **Confidence:** enough evidence to test a narrow paid offer; no evidence yet of repeatable demand
 
 ## Bottom line
@@ -15,8 +15,8 @@ That evidence does **not** validate a generic “one API for every API” compan
 multi-provider search routers already exist in open source, and a 2026 paper describes nearly the
 same vendor-neutral gateway boundary. A thin adapter layer will be copied or given away.
 
-The only version worth funding further is a retrieval control product that earns money from a
-measurable operating result:
+The only version worth funding further starts as a customer-specific retrieval economics and
+reliability audit. The gateway is useful only where it produces a measurable operating result:
 
 - requests succeed inside a customer's cost and latency policy;
 - transient provider failures recover without unsafe or unbounded retries;
@@ -24,8 +24,8 @@ measurable operating result:
 - provider cost estimates reconcile with the customer's actual plan;
 - the customer removes integration and incident work it would otherwise own.
 
-The next proof is money, not more code. FetchMux should run a bounded paid-pilot test and stop or
-pivot if buyers do not pay or metrics do not improve.
+The next proof is money, not more speculative platform scope. FetchMux should run a bounded paid
+audit/pilot test and stop or pivot if qualified buyers do not pay or metrics do not improve.
 
 ## Verified market facts
 
@@ -42,9 +42,22 @@ The founding providers use different units and controls:
   optional content behavior.
 - [Firecrawl lists Search at two credits per ten results](https://www.firecrawl.dev/pricing), while
   optional scraping and other modes can consume additional credits.
+- [Parallel lists Search at USD 5 per 1,000 requests](https://docs.parallel.ai/getting-started/pricing)
+  for its default search mode, while its July 2026
+  [Turbo launch](https://parallel.ai/blog/parallel-search-turbo) lists USD 1 per 1,000 requests and a
+  claimed 200 ms median. Vendor launch claims are not independent measurements.
 
 This supports one narrow claim: provider choice changes the cost and behavior of a request. It does
 not establish which provider is best for a customer workload.
+
+### Controlled research finds similar answers with different evidence economics
+
+The July 2026 paper
+[“Equal Accuracy, Unequal Evidence”](https://arxiv.org/abs/2607.10198) held a GPT-5.4 agent fixed
+across 100 difficult questions and tested Brave, Tavily, and Firecrawl. Final answer counts were
+close, while evidence acquisition, prefetch support, contradictions, and fetch behavior differed.
+That supports workload-specific measurement instead of a universal provider ranking. It is not a
+leaderboard: the study uses one model, one judge design, 100 questions, and three providers.
 
 ### Multi-provider retrieval is already a product category
 
@@ -53,14 +66,33 @@ Several current projects already combine or route search providers:
 - [`mcp-omnisearch`](https://github.com/spences10/mcp-omnisearch) combines several founding
   providers behind MCP tools and had 333 GitHub stars in the 2026-07-16 API snapshot.
 - [`hermes-web-search-plus`](https://github.com/robbyczgw-cla/hermes-web-search-plus) offers
-  multi-provider search/extraction concepts and had 337 stars in the same snapshot.
+  broad multi-provider routing, budgets, cooldowns, spam controls, and quality reports.
+- [Tavily's official MCP server](https://github.com/tavily-ai/tavily-mcp) gives agents a mature direct
+  provider integration, so FetchMux cannot rely on MCP compatibility as differentiation.
 - [Search Router](https://mcpmarket.com/server/search-router) describes query classification,
   provider selection, fallback, and one stable HTTP endpoint.
 - [Decoupled Search Grounding](https://arxiv.org/abs/2606.18947) describes a vendor-agnostic,
   MCP-compatible search gateway with routing, fallback, caching, and control.
+- [Seer](https://seersearch.com/) directly sells retrieval evaluation, change testing, alerts, and
+  groundedness/recall/latency scoring. Observability by itself is also a competitive category.
 
 These sources validate activity and competition. They invalidate any claim that FetchMux invented
 multi-provider search routing.
+
+### The original universal API and agent-payment concept is already crowded
+
+The broad “one account for every API” direction now has near-exact commercial implementations.
+[Coinbase CDP Bazaar](https://docs.cdp.coinbase.com/x402/bazaar) lets agents discover x402 services
+semantically and invoke them through MCP, while [SkillBoss](https://www.skillboss.co/agent-wallet)
+advertises one funded agent wallet, hundreds of paid tools, per-agent limits, and receipts. Generic
+MCP gateways and x402 marketplaces add further overlap.
+
+That ecosystem is not automatically healthy demand. A July 2026
+[population study of x402](https://arxiv.org/abs/2607.12575) reports highly concentrated and
+manufacturable transaction activity, including large internal-settlement and fictitious-transaction
+shares. The paper is new and its classifications need replication, but it is enough to reject raw
+transaction count as proof of independent customers. FetchMux will not enter the generic API broker,
+wallet, or marketplace race without differentiated demand evidence.
 
 ### The gateway pattern has adjacent adoption
 
@@ -83,6 +115,13 @@ default objection FetchMux must beat in every paid conversation.
 
 Community evidence is directional and self-selected. It supplies interview language, not a demand
 forecast.
+
+Operational issue reports make the reliability hypothesis more concrete. An
+[OpenClaw request](https://github.com/openclaw/openclaw/issues/23330) asks for provider fallback and
+key rotation after quota exhaustion, while the
+[Brave Search MCP issue tracker](https://github.com/brave/brave-search-mcp-server/issues) contains a
+request for local rate limiting and retries. These are real requests, not proof that their authors
+would pay FetchMux.
 
 ## Terms research changes the distribution plan
 
@@ -111,8 +150,15 @@ Therefore:
 ### Buyer and trigger
 
 The first buyer hypothesis is a technical founder, engineering lead, or AI platform owner at a small
-team that already has a recurring retrieval workload and at least one of these verified internal
-symptoms:
+production AI team. It qualifies only when the team is already operating two providers or making an
+active provider decision, can supply at least 50 representative queries, has buying authority, and
+has at least one material economic signal:
+
+- USD 500 or more in monthly retrieval plus downstream context spend;
+- eight or more engineering hours per month spent on retrieval integration or incidents; or
+- a plausible single retrieval failure worth at least USD 1,000.
+
+Inside that gate, the audit looks for these symptoms:
 
 - a second provider integration is planned or already maintained;
 - retrieval rate limits or outages have caused user-visible failure;
@@ -136,13 +182,17 @@ beta budget.
 
 ### What the buyer is purchasing
 
-The offer is not an API-key directory. The buyer purchases:
+The offer is not an API-key directory or generic gateway subscription. The buyer purchases:
 
 1. a measured baseline on its own workload;
 2. a deployed, customer-controlled retrieval policy;
 3. cost, deadline, fallback, and credential-safety controls;
 4. weekly evidence against one agreed success metric;
 5. a keep, change, or remove recommendation at the end.
+
+If one provider wins the workload, the honest deliverable is an evaluation or migration decision.
+If policy routing produces no measurable value, FetchMux should sell change testing without leaving
+an unnecessary gateway in production.
 
 ### Growth choice: revenue first
 
@@ -169,6 +219,7 @@ the founding success criterion; virality is optional upside.
 | In-house adapter interface | Full control with no vendor | FetchMux costs less engineering time to adopt and maintain. |
 | Model-native web search | No separate search service for supported models | Provider independence or control matters for this workload. |
 | One dominant provider | Low operational complexity | A second provider has demonstrated value; otherwise recommend the single provider. |
+| Retrieval evaluation platform | Quality and change testing without a routing gateway | Customer-specific cost reconciliation, safe deployment, and operational remediation justify the service. |
 
 FetchMux loses honestly when one provider is sufficient. The pilot must be allowed to recommend
 that outcome.
@@ -179,6 +230,7 @@ that outcome.
 | --- | --- | --- |
 | Problem activity | Current providers, competitors, and community discussions exist | Passed |
 | Technical feasibility | Router, adapters, API, SDK, MCP, benchmark, site, and container work locally | Passed |
+| Real upstream path | A protected FetchMux request reaches a real upstream and returns a receipt | Passed locally with opt-in Crossref scholarly metadata |
 | Buyer pain | Ten qualified conversations document recurring workload and measurable pain | Not started |
 | Willingness to pay | Three qualified teams pay for the founding pilot | Not started |
 | Measurable value | At least two pilots improve an agreed metric or remove measured engineering work | Not started |
@@ -194,7 +246,7 @@ The operating lead must change direction when evidence says so:
 - fewer than three paid pilots after 21 days of active, approved outreach: narrow the segment or
   change the offer;
 - no meaningful metric improvement in at least two well-qualified pilots by day 45: pivot to
-  retrieval evaluation/observability or stop;
+  retrieval audit and change testing without a persistent router, or stop;
 - most prospects want only free failover: open or abandon the router and sell a different pain;
 - one provider wins every real workload: sell evaluation and migration instead of dynamic routing;
 - provider terms prevent the required customer use: remove that adapter or secure written rights;
@@ -205,7 +257,8 @@ The operating lead must change direction when evidence says so:
 Allowed now:
 
 - “One retrieval API. The right provider for every request.” as a product promise to be tested;
-- “BYOK adapters for Brave, Tavily, Exa, and Firecrawl” as an implemented capability;
+- “BYOK adapters for Brave, Tavily, Exa, and Firecrawl, plus opt-in Crossref metadata” as an
+  implemented capability;
 - exact local test and benchmark-dry-run facts;
 - “private founding build” and “price hypothesis.”
 

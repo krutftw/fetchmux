@@ -27,6 +27,8 @@ or production multi-tenant readiness.
 - [x] Deterministic provider filtering and scoring with hard cost and latency limits.
 - [x] Classified retry-only fallback, circuit state, and safe terminal errors.
 - [x] BYOK Brave, Tavily, Exa, and Firecrawl adapters using fixed HTTPS provider endpoints.
+- [x] Explicit-opt-in Crossref scholarly-metadata adapter with identified requests and zero copied
+  abstracts.
 - [x] Authenticated REST gateway, TypeScript SDK, and two read-only MCP tools.
 - [x] Reproducible 24-case benchmark harness with dry-run as the default and explicit live-call gates.
 - [x] Truthful founding site with illustrative labels, provisional pricing, and disabled intake when
