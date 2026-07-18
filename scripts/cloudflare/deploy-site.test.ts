@@ -53,6 +53,7 @@ describe("Cloudflare site deployment contract", () => {
     expect(deploy).toContain("Content-Security-Policy");
     expect(deploy).toContain("Strict-Transport-Security");
     expect(deploy).toContain("deployment_trigger.metadata");
+    expect(deploy).toContain("[int]$MaxAttempts = 40");
     expect(deploy).toContain("Test-SiteSurface -Origin $deploymentOrigin");
     expect(deploy.indexOf("Test-SiteSurface -Origin $deploymentOrigin")).toBeLessThan(
       deploy.indexOf("Add-CustomDomain -Credential"),

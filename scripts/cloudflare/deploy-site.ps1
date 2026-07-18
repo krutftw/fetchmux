@@ -90,7 +90,7 @@ function Test-LocalSurface {
 function Test-SiteSurface {
   param(
     [Parameter(Mandatory)][string]$Origin,
-    [int]$MaxAttempts = 15,
+    [int]$MaxAttempts = 40,
     [int]$DelaySeconds = 3
   )
 
@@ -167,7 +167,8 @@ function Test-SiteSurface {
       if ($attempt -eq $MaxAttempts) {
         throw
       }
-      Write-Host "Waiting for the Pages surface at $Origin (attempt $attempt of $MaxAttempts)."
+      $failure = $_.Exception.Message
+      Write-Host "Waiting for the Pages surface at $Origin (attempt $attempt of $MaxAttempts): $failure"
       Start-Sleep -Seconds $DelaySeconds
     }
   }
