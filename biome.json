@@ -8,7 +8,8 @@
       "!**/node_modules",
       "!**/dist",
       "!**/coverage",
-      "!**/benchmarks/results"
+      "!**/benchmarks/results",
+      "!apps/site/public/openapi.json"
     ]
   },
   "formatter": {
