@@ -89,6 +89,14 @@ describe("FetchMux machine-readable domain surface", () => {
     expect(surface).not.toMatch(/official (?:partner|partnership) of/i);
   });
 
+  it("prevents edge transformations from injecting scripts into the page", () => {
+    const headers = buildMachineSurface({ openapiYaml })._headers;
+
+    expect(headers).toContain(
+      "/\n  Cache-Control: public, max-age=0, must-revalidate, no-transform",
+    );
+  });
+
   it("writes only the known UTF-8 files and produces stable output on repeated runs", () => {
     const temporaryRoot = mkdtempSync(join(tmpdir(), "fetchmux-machine-surface-"));
     temporaryRoots.push(temporaryRoot);

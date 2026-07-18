@@ -30,7 +30,6 @@ const mcpExample = `{
 
 export function App({ pilotContactUrl }: AppProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  useReveal();
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -109,7 +108,7 @@ export function App({ pilotContactUrl }: AppProps) {
 
       <main id="main-content" tabIndex={-1}>
         <section className="hero page-shell" aria-labelledby="hero-title">
-          <div className="hero-copy" data-reveal>
+          <div className="hero-copy">
             <p className="signal-line">
               <span aria-hidden="true" />
               Retrieval infrastructure for agents
@@ -135,13 +134,13 @@ export function App({ pilotContactUrl }: AppProps) {
             </div>
           </div>
 
-          <div className="hero-demo-shell" data-reveal>
+          <div className="hero-demo-shell">
             <div className="hero-demo-core">
               <RouteReceiptDemo />
             </div>
           </div>
 
-          <div className="adapter-line" data-reveal>
+          <div className="adapter-line">
             <p>Adapters in the current build</p>
             <ul aria-label="Current provider adapters">
               <li>Brave</li>
@@ -158,7 +157,7 @@ export function App({ pilotContactUrl }: AppProps) {
           id="product"
           aria-labelledby="product-title"
         >
-          <header className="section-intro" data-reveal>
+          <header className="section-intro">
             <p className="section-label">The routing layer</p>
             <h2 id="product-title">Your agent describes the job. FetchMux chooses the route.</h2>
             <p>
@@ -168,7 +167,7 @@ export function App({ pilotContactUrl }: AppProps) {
           </header>
 
           <div className="feature-grid">
-            <div className="feature-shell feature-contract" data-reveal>
+            <div className="feature-shell feature-contract">
               <article className="feature-card">
                 <FeatureHeader number="01" title="One stable contract" />
                 <p className="feature-lede">
@@ -199,7 +198,7 @@ export function App({ pilotContactUrl }: AppProps) {
               </article>
             </div>
 
-            <div className="feature-shell feature-policy" data-reveal>
+            <div className="feature-shell feature-policy">
               <article className="feature-card feature-dark">
                 <FeatureHeader number="02" title="Policy before preference" />
                 <p>
@@ -227,7 +226,7 @@ export function App({ pilotContactUrl }: AppProps) {
               </article>
             </div>
 
-            <div className="feature-shell feature-receipt" data-reveal>
+            <div className="feature-shell feature-receipt">
               <article className="feature-card">
                 <FeatureHeader number="03" title="The decision comes back" />
                 <p>
@@ -261,7 +260,7 @@ export function App({ pilotContactUrl }: AppProps) {
           id="connect"
           aria-labelledby="connect-title"
         >
-          <header className="connect-copy" data-reveal>
+          <header className="connect-copy">
             <p className="section-label">Connect once</p>
             <h2 id="connect-title">The model only needs to know FetchMux.</h2>
             <p>
@@ -274,29 +273,29 @@ export function App({ pilotContactUrl }: AppProps) {
             </div>
           </header>
 
-          <div className="code-stack" data-reveal>
+          <div className="code-stack">
             <CodeBlock label="REST / search" code={restExample} />
             <CodeBlock label="MCP / config" code={mcpExample} />
           </div>
         </section>
 
         <section className="control-section page-shell" aria-labelledby="control-title">
-          <header data-reveal>
+          <header>
             <p className="section-label">Operator control</p>
             <h2 id="control-title">Nothing important disappears behind the router.</h2>
           </header>
           <div className="control-list">
-            <article data-reveal>
+            <article>
               <span>01</span>
               <h3>Your credentials</h3>
               <p>Provider keys remain in the gateway process, outside prompts and this website.</p>
             </article>
-            <article data-reveal>
+            <article>
               <span>02</span>
               <h3>Your limits</h3>
               <p>Hard budgets and deadlines are eligibility rules, not best-effort suggestions.</p>
             </article>
-            <article data-reveal>
+            <article>
               <span>03</span>
               <h3>Your evidence</h3>
               <p>Query text is excluded from operational events by default. Route facts remain.</p>
@@ -381,28 +380,4 @@ function RouteMark() {
       <circle cx="27" cy="19" r="2" />
     </svg>
   );
-}
-
-function useReveal() {
-  useEffect(() => {
-    const elements = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
-    if (!("IntersectionObserver" in window)) {
-      for (const element of elements) element.classList.add("is-visible");
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
-    );
-
-    for (const element of elements) observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
 }

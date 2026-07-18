@@ -56,7 +56,7 @@ describe("FetchMux launch site", () => {
   });
 
   it("provides semantic landmarks, keyboard entry, mobile navigation, and reduced motion", () => {
-    render(<App />);
+    const { container } = render(<App />);
 
     expect(screen.getByRole("link", { name: "Skip to main content" })).toHaveAttribute(
       "href",
@@ -81,6 +81,8 @@ describe("FetchMux launch site", () => {
     expect(styles).toMatch(/\.code-heading button\s*\{[^}]*min-height: 44px;/s);
     expect(styles).not.toContain("ease-in-out");
     expect(styles).not.toContain("Archivo Variable");
+    expect(container.querySelectorAll("[data-reveal]")).toHaveLength(0);
+    expect(styles).not.toContain("[data-reveal]");
   });
 
   it("declares an explicit local favicon so browsers do not request a missing default", () => {

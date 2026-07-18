@@ -7,7 +7,7 @@ export function PilotCta({ contactUrl }: PilotCtaProps) {
 
   return (
     <section className="pilot-section page-shell" id="pilot" aria-labelledby="pilot-title">
-      <div className="pilot-shell" data-reveal>
+      <div className="pilot-shell">
         <div className="pilot-card">
           <div className="pilot-copy">
             <p className="section-label">Founding implementation</p>

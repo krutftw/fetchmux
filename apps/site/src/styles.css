@@ -86,19 +86,6 @@ a {
   margin-inline: auto;
 }
 
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(12px);
-  transition:
-    opacity 600ms var(--motion),
-    transform 600ms var(--motion);
-}
-
-[data-reveal].is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .nav-wrap {
   position: fixed;
   z-index: 30;
@@ -1648,12 +1635,6 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  [data-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
   }
 
   .desktop-nav a,
