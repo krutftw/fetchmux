@@ -194,8 +194,10 @@ delivery live in [founding-pilot.md](founding-pilot.md); score every conversatio
 **Day 0 — owner gates (blocking, ~2–3 hours):**
 1. Run the [public-release runbook](../runbooks/public-release.md): review LICENSE, flip GitHub to
    public, `npm publish` both packages, MCP registry publish.
-2. Register an ABN as a sole trader (free, register.business.gov.au) so the first invoice is legal.
-   GST registration is not required under AUD 75k turnover — confirm details with an accountant.
+2. Reactivate the existing sole-trader ABN (free, abr.gov.au via myGov) — the ABR showed it
+   cancelled as of 2026-07-22 — and confirm the public record reads **Active** before quoting or
+   invoicing. GST registration is not required under AUD 75k turnover — confirm with an accountant.
+   Details: untracked `.private/entity-record.md`.
 3. Activate Stripe on the ABN; create the USD 849 one-time pilot checkout in **test mode** per
    [founding-pilot.md](founding-pilot.md). Go live on Stripe only when the legal checklist closes.
 

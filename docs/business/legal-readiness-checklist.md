@@ -25,6 +25,12 @@ the operative terms and authorize the workload.
 
 ## Gate 1: entity, ownership, and money
 
+**Progress 2026-07-22:** the founder operates as an Australian sole trader and supplied an ABN, but
+the public ABR record showed it **cancelled from 21 Jul 2026** when checked the same day.
+Reactivation and an Active ABR read-back are required before any quote or invoice. Identifying
+details are kept in the untracked `.private/entity-record.md`, not in this repository, because the
+repository is planned to become public.
+
 Required before a proposal is accepted, an invoice is issued, or payment is taken:
 
 - [ ] Choose operating jurisdiction with counsel and tax advice.
@@ -181,7 +187,7 @@ No managed usage or resale occurs with a normal customer API key.
 
 | Blocker | Current state | Required authority/evidence |
 | --- | --- | --- |
-| Entity and tax setup | Open | Lawyer/accountant and owner action |
+| Entity and tax setup | Open — sole-trader ABN supplied but ABR shows it cancelled (2026-07-22); owner reactivation required, then Active read-back | Lawyer/accountant and owner action |
 | FetchMux name/domain clearance | Open | Trademark/domain review and owner approval |
 | Customer pilot contract | Open | Counsel-approved agreement |
 | Provider commercial/benchmark rights | Open | Provider-specific terms review and permissions |
