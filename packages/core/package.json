@@ -1,13 +1,33 @@
 {
   "name": "@fetchmux/core",
   "version": "0.1.0",
-  "private": true,
+  "description": "Shared request, response, and route-receipt contracts for the FetchMux retrieval router.",
+  "license": "Apache-2.0",
+  "homepage": "https://fetchmux.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krutftw/fetchmux.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "fetchmux",
+    "retrieval",
+    "search",
+    "ai-agents",
+    "routing"
+  ],
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "zod": "^4.4.3"

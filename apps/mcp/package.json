@@ -1,11 +1,36 @@
 {
   "name": "@fetchmux/mcp",
   "version": "0.1.0",
-  "private": true,
+  "description": "Read-only MCP server for the FetchMux retrieval router. Tools: search_web and preview_search_route, with per-request budgets, deadlines, and route receipts.",
+  "license": "Apache-2.0",
+  "homepage": "https://fetchmux.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krutftw/fetchmux.git",
+    "directory": "apps/mcp"
+  },
+  "keywords": [
+    "fetchmux",
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "retrieval",
+    "web-search",
+    "ai-agents"
+  ],
   "type": "module",
+  "bin": {
+    "fetchmux-mcp": "dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
-    "@fetchmux/core": "*",
-    "@fetchmux/sdk": "*",
+    "@fetchmux/core": "0.1.0",
+    "@fetchmux/sdk": "0.1.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "zod": "^4.4.3"
   },

@@ -238,6 +238,8 @@ npm run dev:site
 ## Operating documentation
 
 - [Local development](docs/runbooks/local-development.md)
+- [Public release](docs/runbooks/public-release.md)
+- [Launch kit](docs/business/launch-kit-2026-07-22.md)
 - [Deployment](docs/runbooks/deployment.md)
 - [Azure staging](docs/runbooks/azure-staging.md)
 - [Provider configuration](docs/runbooks/provider-configuration.md)
@@ -268,5 +270,6 @@ metadata returned to callers as customer data.
 
 ## License
 
-No public software license has been granted for this private founding build. Choose and add a
-license before opening the repository or accepting outside contributions.
+[Apache-2.0](LICENSE). The license grant takes practical effect when the repository is made public;
+swap the LICENSE file first if a different license is preferred. See the
+[public release runbook](docs/runbooks/public-release.md) for the full release sequence.

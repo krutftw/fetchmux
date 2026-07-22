@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.krutftw/fetchmux",
+  "description": "Read-only MCP server for the FetchMux retrieval router: web search across customer-keyed providers with per-request cost ceilings, deadlines, and auditable route receipts.",
+  "repository": {
+    "url": "https://github.com/krutftw/fetchmux",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "websiteUrl": "https://fetchmux.com",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@fetchmux/mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "FETCHMUX_BASE_URL",
+          "description": "Base URL of the self-hosted FetchMux gateway.",
+          "isRequired": false,
+          "format": "string",
+          "default": "http://127.0.0.1:8787/"
+        },
+        {
+          "name": "FETCHMUX_API_KEY",
+          "description": "Bearer key for the gateway's protected routes.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

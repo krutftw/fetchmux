@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { FetchMux } from "@fetchmux/sdk";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { createMcpServer } from "./server.js";

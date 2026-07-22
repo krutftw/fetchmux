@@ -29,3 +29,17 @@ dependency or base image becomes available.
 The current Debian runtime advisories are not exceptions: they remain visible in the container
 report and are counted by the gate as medium or low advisory findings under the checked-in general
 threshold policy.
+
+## Active exception records
+
+### 2026-07-22 — @hono/node-server via @modelcontextprotocol/sdk (2 moderate)
+
+- **Scanner/source:** `npm audit`; `@modelcontextprotocol/sdk@1.29.0` → `@hono/node-server@1.19.14`.
+- **Why not exploitable here:** the FetchMux MCP server (`apps/mcp`) uses only the stdio transport;
+  the vulnerable Hono HTTP server code path is never started. The gateway does not use the MCP SDK.
+- **Evidence:** `1.29.0` is the latest published MCP SDK on 2026-07-22 and pins the affected
+  version; no fixed upstream release exists. The earlier `fast-uri` high advisory was remediated the
+  same day via `npm audit fix` (231/231 tests passing after).
+- **Compensating controls:** stdio-only usage; owner review of `npm audit` before each release.
+- **Owner:** repository owner. **Expiry:** 2026-08-21 — re-check for a fixed MCP SDK release and
+  remove this record when one ships.

@@ -1,16 +1,38 @@
 {
   "name": "@fetchmux/sdk",
   "version": "0.1.0",
-  "private": true,
+  "description": "Typed TypeScript client for the FetchMux retrieval router: one search contract, budget and deadline inputs, route receipts.",
+  "license": "Apache-2.0",
+  "homepage": "https://fetchmux.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krutftw/fetchmux.git",
+    "directory": "packages/sdk"
+  },
+  "keywords": [
+    "fetchmux",
+    "retrieval",
+    "search",
+    "ai-agents",
+    "web-search",
+    "rag",
+    "sdk"
+  ],
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
-    "@fetchmux/core": "*",
+    "@fetchmux/core": "0.1.0",
     "zod": "^4.4.3"
   },
   "scripts": {
