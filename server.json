@@ -1,5 +1,5 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.krutftw/fetchmux",
   "description": "Read-only MCP server for the FetchMux retrieval router: web search across customer-keyed providers with per-request cost ceilings, deadlines, and auditable route receipts.",
   "repository": {

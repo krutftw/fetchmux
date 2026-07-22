@@ -1,6 +1,7 @@
 {
   "name": "@fetchmux/mcp",
   "version": "0.1.0",
+  "mcpName": "io.github.krutftw/fetchmux",
   "description": "Read-only MCP server for the FetchMux retrieval router. Tools: search_web and preview_search_route, with per-request budgets, deadlines, and route receipts.",
   "license": "Apache-2.0",
   "homepage": "https://fetchmux.com",
