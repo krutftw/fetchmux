@@ -315,6 +315,7 @@ export function App({ pilotContactUrl }: AppProps) {
         </a>
         <p>Independent retrieval routing infrastructure for AI agents.</p>
         <div className="footer-links">
+          <a href="https://github.com/krutftw/fetchmux">GitHub</a>
           <a href="/openapi.yaml">OpenAPI contract</a>
           <a href="/llms.txt">Agent brief</a>
           <a href="/robots.txt">Crawler policy</a>

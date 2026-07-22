@@ -3,10 +3,17 @@
 
 > Provider-neutral retrieval routing for AI agents, with inspectable policy decisions and route receipts.
 
-FetchMux is machine-first and human-governed. It is currently a private BYOK preview: operators
-provide and control their own upstream provider credentials. https://fetchmux.com publishes product
-information and machine-readable contracts; it does not currently host a public API or remote MCP
-service. No upstream partnership or resale right is claimed.
+FetchMux is machine-first and human-governed. The gateway is open source (Apache-2.0) and
+self-hosted: operators run it themselves and provide their own upstream provider credentials (BYOK).
+https://fetchmux.com publishes product information and machine-readable contracts; it does not host
+a public API or remote MCP service. No upstream partnership or resale right is claimed.
+
+## Source and self-hosting
+
+- [GitHub repository](https://github.com/krutftw/fetchmux): Gateway, TypeScript SDK, and read-only
+  MCP server (`search_web`, `preview_search_route`), Apache-2.0.
+- Quick start: clone, `npm clean-install`, `npm run build`, set a gateway key, `npm run dev:gateway`.
+  A credential-free Crossref route allows a full trial without any provider account.
 
 ## Machine contracts
 

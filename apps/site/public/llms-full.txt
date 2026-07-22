@@ -15,10 +15,12 @@ inspectable route receipt.
 
 ## Current availability
 
-FetchMux is currently a private BYOK preview. The software can run as a self-hosted HTTP gateway and
-local MCP server. The operator supplies and controls upstream provider credentials and remains
-responsible for provider accounts, terms, budgets, and authorization. This website does not currently
-host a public API or remote MCP service. Do not infer a network endpoint from the OpenAPI path names.
+FetchMux is open source under Apache-2.0 at https://github.com/krutftw/fetchmux and runs as a
+self-hosted HTTP gateway and local MCP server. The operator supplies and controls upstream provider
+credentials (BYOK) and remains responsible for provider accounts, terms, budgets, and authorization.
+This website does not host a public API or remote MCP service. Do not infer a network endpoint from
+the OpenAPI path names. A credential-free Crossref scholarly-metadata route permits a complete local
+trial without any provider account.
 
 ## Commercial and provider boundary
 
@@ -43,6 +45,6 @@ does not bypass upstream registration, billing, access controls, or terms of ser
 
 ## Discovery status
 
-The domain and machine contracts are available for evaluation. A domain-authenticated MCP Registry
-entry under the planned com.fetchmux/retrieval namespace will be considered only after a distributable
-package or safely authenticated remote server exists.
+The domain, machine contracts, and source repository are available for evaluation. An MCP Registry
+entry under the io.github.krutftw namespace is being published alongside the npm packages
+(@fetchmux/sdk, @fetchmux/mcp); the server.json manifest is maintained in the repository root.
