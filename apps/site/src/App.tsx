@@ -319,7 +319,6 @@ export function App({ pilotContactUrl, pilotCtaLabel }: AppProps) {
         </a>
         <p>Independent retrieval routing infrastructure for AI agents.</p>
         <div className="footer-links">
-          <a href="/portal">Customer portal</a>
           <a href="https://github.com/krutftw/fetchmux">GitHub</a>
           <a href="/openapi.yaml">OpenAPI contract</a>
           <a href="/llms.txt">Agent brief</a>

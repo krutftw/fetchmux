@@ -3,11 +3,11 @@ interface PilotCtaProps {
   readonly ctaLabel?: string;
 }
 
-const defaultPilotContactUrl = "https://buy.stripe.com/14A4gz5FDeLL9haf4Q7ok01";
-const defaultCtaLabel = "Buy the founding pilot";
+const defaultCtaUrl = "https://github.com/krutftw/fetchmux";
+const defaultCtaLabel = "Get started on GitHub";
 
 export function PilotCta({ contactUrl, ctaLabel }: PilotCtaProps) {
-  const safeContactUrl = normalizeContactUrl(contactUrl ?? defaultPilotContactUrl);
+  const safeUrl = normalizeContactUrl(contactUrl ?? defaultCtaUrl);
   const label = ctaLabel?.trim() || defaultCtaLabel;
 
   return (
@@ -15,46 +15,39 @@ export function PilotCta({ contactUrl, ctaLabel }: PilotCtaProps) {
       <div className="pilot-shell">
         <div className="pilot-card">
           <div className="pilot-copy">
-            <p className="section-label">Founding implementation</p>
-            <h2 id="pilot-title">A paid pilot. Not a waitlist.</h2>
+            <p className="section-label">Open source</p>
+            <h2 id="pilot-title">Run it yourself. Free and open source.</h2>
             <p>
-              Bring one real retrieval workload. We will benchmark it, connect REST or MCP, and
-              agree on one outcome: lower cost, lower latency, or better completion. If routing does
-              not help, you leave with the evidence.
+              FetchMux is Apache-2.0. Self-host the gateway, bring your own provider keys, and keep
+              every route receipt. No signup, no lock-in — nothing leaves your infrastructure.
             </p>
           </div>
 
-          <section className="pilot-offer" aria-label="Founding pilot intake">
+          <section className="pilot-offer" aria-label="Get started with FetchMux">
             <p className="pilot-price">
-              <strong>USD 849</strong>
-              <span>first 30 days: USD 750 setup + USD 99 pilot</span>
+              <strong>Free</strong>
+              <span>Apache-2.0 · self-hosted · bring your own keys</span>
             </p>
             <ul>
-              <li>Representative workload benchmark</li>
-              <li>Gateway policy and integration</li>
-              <li>Weekly outcome scorecard</li>
+              <li>Install and run in one command</li>
+              <li>REST, TypeScript SDK, and MCP server</li>
+              <li>Zero-key trial through the Crossref route</li>
             </ul>
-            {safeContactUrl ? (
+            {safeUrl ? (
               <a
                 className="pilot-action-link"
-                href={safeContactUrl}
-                rel={safeContactUrl.startsWith("https:") ? "noreferrer" : undefined}
+                href={safeUrl}
+                rel={safeUrl.startsWith("https:") ? "noreferrer" : undefined}
               >
                 <span>{label}</span>
                 <span className="action-orb" aria-hidden="true">
                   ↗
                 </span>
               </a>
-            ) : (
-              <div className="pilot-unavailable" role="status">
-                <strong>Pilot intake is being connected.</strong>
-                <span>The application address will appear here once delivery is verified.</span>
-              </div>
-            )}
+            ) : null}
             <p className="pilot-safety">
-              Checkout opens your pilot portal immediately — no email round trip. Provider usage is
-              billed separately by your provider; keys are exchanged only through the agreed secure
-              channel, never email.
+              A hosted, zero-setup version is in the works — star the repo to follow. Provider usage
+              is billed by your provider; keys stay in your gateway, never on this site.
             </p>
           </section>
         </div>

@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 describe("FetchMux launch site", () => {
-  it("leads with a concrete product problem and one honest commercial offer", () => {
+  it("leads with a concrete product problem and an honest open-source offer", () => {
     render(<App />);
 
     expect(
@@ -26,56 +26,52 @@ describe("FetchMux launch site", () => {
     expect(screen.getByText(/interface example only/i)).toBeInTheDocument();
     expect(screen.getByText(/no partnership or resale right is claimed/i)).toBeInTheDocument();
 
-    const pilot = screen.getByRole("region", { name: "Founding pilot intake" });
-    expect(within(pilot).getByText("USD 849")).toBeInTheDocument();
+    const getStarted = screen.getByRole("region", { name: "Get started with FetchMux" });
+    expect(within(getStarted).getByText("Free")).toBeInTheDocument();
     expect(
-      within(pilot).getByText("first 30 days: USD 750 setup + USD 99 pilot"),
+      within(getStarted).getByText(/apache-2\.0 · self-hosted · bring your own keys/i),
     ).toBeInTheDocument();
-    expect(screen.queryByText(/pricing hypotheses/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/illustrative benchmark/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("USD 849")).not.toBeInTheDocument();
   });
 
-  it("sells the founding pilot through checkout by default", () => {
+  it("defaults the primary call to action to the open-source repository", () => {
     render(<App />);
 
-    const pilot = screen.getByRole("region", { name: "Founding pilot intake" });
-    expect(within(pilot).getByRole("link", { name: "Buy the founding pilot" })).toHaveAttribute(
+    const getStarted = screen.getByRole("region", { name: "Get started with FetchMux" });
+    expect(within(getStarted).getByRole("link", { name: "Get started on GitHub" })).toHaveAttribute(
       "href",
-      "https://buy.stripe.com/14A4gz5FDeLL9haf4Q7ok01",
+      "https://github.com/krutftw/fetchmux",
     );
     expect(
-      within(pilot).getByText(/checkout opens your pilot portal immediately/i),
+      within(getStarted).getByText(/hosted, zero-setup version is in the works/i),
     ).toBeInTheDocument();
-    expect(screen.queryByText("Pilot intake is being connected.")).not.toBeInTheDocument();
   });
 
-  it("uses only a configured safe contact URL", () => {
+  it("uses only a configured safe call-to-action URL", () => {
     const { rerender } = render(<App pilotContactUrl="javascript:alert('unsafe')" />);
-    expect(screen.queryByRole("link", { name: "Buy the founding pilot" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Get started on GitHub" })).not.toBeInTheDocument();
 
-    rerender(<App pilotContactUrl="https://example.com/fetchmux-pilot" />);
+    rerender(<App pilotContactUrl="https://example.com/hosted-beta" />);
 
-    expect(screen.getByRole("link", { name: "Buy the founding pilot" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Get started on GitHub" })).toHaveAttribute(
       "href",
-      "https://example.com/fetchmux-pilot",
+      "https://example.com/hosted-beta",
     );
   });
 
-  it("renders a configured checkout label on the pilot action", () => {
+  it("renders a configured call-to-action label", () => {
     render(
       <App
-        pilotContactUrl="https://buy.stripe.com/example"
-        pilotCtaLabel="Buy the founding pilot"
+        pilotContactUrl="https://example.com/hosted-beta"
+        pilotCtaLabel="Join the hosted beta"
       />,
     );
 
-    expect(screen.getByRole("link", { name: "Buy the founding pilot" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Join the hosted beta" })).toHaveAttribute(
       "href",
-      "https://buy.stripe.com/example",
+      "https://example.com/hosted-beta",
     );
-    expect(
-      screen.queryByRole("link", { name: "Apply for a founding pilot" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Get started on GitHub" })).not.toBeInTheDocument();
   });
 
   it("provides semantic landmarks, keyboard entry, mobile navigation, and reduced motion", () => {
