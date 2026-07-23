@@ -1,11 +1,14 @@
 interface PilotCtaProps {
   readonly contactUrl?: string;
+  readonly ctaLabel?: string;
 }
 
 const defaultPilotContactUrl = "mailto:hello@fetchmux.com?subject=FetchMux%20founding%20pilot";
+const defaultCtaLabel = "Apply for a founding pilot";
 
-export function PilotCta({ contactUrl }: PilotCtaProps) {
+export function PilotCta({ contactUrl, ctaLabel }: PilotCtaProps) {
   const safeContactUrl = normalizeContactUrl(contactUrl ?? defaultPilotContactUrl);
+  const label = ctaLabel?.trim() || defaultCtaLabel;
 
   return (
     <section className="pilot-section page-shell" id="pilot" aria-labelledby="pilot-title">
@@ -37,7 +40,7 @@ export function PilotCta({ contactUrl }: PilotCtaProps) {
                 href={safeContactUrl}
                 rel={safeContactUrl.startsWith("https:") ? "noreferrer" : undefined}
               >
-                <span>Apply for a founding pilot</span>
+                <span>{label}</span>
                 <span className="action-orb" aria-hidden="true">
                   ↗
                 </span>

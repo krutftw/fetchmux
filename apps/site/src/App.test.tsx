@@ -63,6 +63,23 @@ describe("FetchMux launch site", () => {
     );
   });
 
+  it("renders a configured checkout label on the pilot action", () => {
+    render(
+      <App
+        pilotContactUrl="https://buy.stripe.com/example"
+        pilotCtaLabel="Buy the founding pilot"
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: "Buy the founding pilot" })).toHaveAttribute(
+      "href",
+      "https://buy.stripe.com/example",
+    );
+    expect(
+      screen.queryByRole("link", { name: "Apply for a founding pilot" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("provides semantic landmarks, keyboard entry, mobile navigation, and reduced motion", () => {
     const { container } = render(<App />);
 

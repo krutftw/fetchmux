@@ -98,7 +98,35 @@ https://github.com/modelcontextprotocol/registry/tree/main/docs
   category, open a PR:
   `[krutftw/fetchmux](https://github.com/krutftw/fetchmux) - Self-hosted retrieval router with per-request budgets, provider policy routing, and auditable route receipts (BYOK).`
 
-## 5. After release
+## 5. Turn on buy-on-the-website (after Stripe activation)
+
+Prepared 2026-07-23. A dedicated Stripe account "FetchMux" (`acct_1TwDMQEQYg64P9i7`) holds the
+pilot checkout: two one-time prices (USD 750 setup + USD 99 first 30 days), an optional
+"retrieval workload" question, and an automated what-happens-next confirmation message. The
+verified TEST link is `https://buy.stripe.com/test_4gM28r6JH5bb2SMbSE7ok00`. The site CTA swaps
+from the mailto intake to a checkout button purely via build-time variables — no code change.
+
+1. Owner activates the FetchMux Stripe account (Dashboard → FetchMux → Activate: identity + bank).
+2. Recreate the same objects in live mode (CLI profile `fetchmux`, add `--live`): two products,
+   two prices, one payment link with the same custom field and confirmation message. Record the
+   live link.
+3. Build and deploy the site with the checkout CTA:
+
+```powershell
+$env:VITE_PILOT_CONTACT_URL = "https://buy.stripe.com/LIVE_LINK_HERE"
+$env:VITE_PILOT_CTA_LABEL = "Buy the founding pilot"
+npm run build
+npx wrangler pages deploy apps/site/dist --project-name fetchmux --branch main --commit-dirty=true
+```
+
+4. Verify on fetchmux.com: the pilot card shows "Buy the founding pilot" linking to the live
+   checkout; complete one USD 0-risk verification by opening the page (do not test-pay live).
+5. Every sale then runs itself through onboarding: Stripe receipt + confirmation instructions;
+   the founder's delivery work (benchmark, integration, scorecard) starts at the scheduled setup.
+
+Never point the public site at the test-mode link.
+
+## 6. After release
 
 - Watch GitHub issues/stars and reply same-day; new issues are discovery conversations.
 - Keep `main` as the released branch; continue work on feature branches.

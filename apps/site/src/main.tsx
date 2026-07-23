@@ -9,9 +9,13 @@ const root = document.getElementById("root");
 if (!root) throw new Error("FetchMux site root was not found");
 
 const pilotContactUrl = import.meta.env.VITE_PILOT_CONTACT_URL?.trim();
+const pilotCtaLabel = import.meta.env.VITE_PILOT_CTA_LABEL?.trim();
 
 createRoot(root).render(
   <StrictMode>
-    <App {...(pilotContactUrl ? { pilotContactUrl } : {})} />
+    <App
+      {...(pilotContactUrl ? { pilotContactUrl } : {})}
+      {...(pilotCtaLabel ? { pilotCtaLabel } : {})}
+    />
   </StrictMode>,
 );

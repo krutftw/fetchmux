@@ -4,6 +4,7 @@ import { RouteReceiptDemo } from "./components/RouteReceiptDemo.js";
 
 interface AppProps {
   readonly pilotContactUrl?: string;
+  readonly pilotCtaLabel?: string;
 }
 
 const restExample = `curl http://127.0.0.1:8787/v1/search \\
@@ -28,7 +29,7 @@ const mcpExample = `{
   }
 }`;
 
-export function App({ pilotContactUrl }: AppProps) {
+export function App({ pilotContactUrl, pilotCtaLabel }: AppProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -305,7 +306,10 @@ export function App({ pilotContactUrl }: AppProps) {
           </div>
         </section>
 
-        <PilotCta {...(pilotContactUrl === undefined ? {} : { contactUrl: pilotContactUrl })} />
+        <PilotCta
+          {...(pilotContactUrl === undefined ? {} : { contactUrl: pilotContactUrl })}
+          {...(pilotCtaLabel === undefined ? {} : { ctaLabel: pilotCtaLabel })}
+        />
       </main>
 
       <footer className="site-footer page-shell">
