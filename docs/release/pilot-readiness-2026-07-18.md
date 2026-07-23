@@ -84,9 +84,12 @@ site and intake must never request provider keys or private queries.
   *Done 2026-07-23: account read back via paired CLI; test products/prices (USD 750 + USD 99,
   one-time, no automatic tax) and payment link created; test checkout completed with Stripe's
   documented test card; `checkout.session.completed`, `payment_intent.succeeded`, and
-  `charge.succeeded` reconciled (amount_total 84900). Note: objects currently live in the
-  operator's existing activated Stripe account, which displays its own business name at checkout;
-  decide account naming/separation before generating any live checkout.*
+  `charge.succeeded` reconciled (amount_total 84900). Later the same day a dedicated separate
+  Stripe account named "FetchMux" (AU) was created under the same login; the checkout objects were
+  recreated there, a second test checkout paid and reconciled with "Pay FetchMux" branding, and the
+  stray test objects in the other account were deactivated (verified via API responses). Live
+  charges require activating the FetchMux account (owner KYC + bank details) — the test link is
+  https://buy.stripe.com/test_4gM28r6JH5bb2SMbSE7ok00.*
 - [ ] Repeat with a least-privilege live restricted key only after Stripe activation and every prior
   invoice gate passes; never publish a generic live payment link on the application site.
 
