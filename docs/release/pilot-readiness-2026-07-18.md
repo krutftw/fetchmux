@@ -79,8 +79,14 @@ site and intake must never request provider keys or private queries.
   contact, backup/restore expectation, support hours, and closeout key rotation in the signed scope.
 - [ ] Configure one real customer-authorized provider in the customer's isolated environment and
   pass readiness, protected search, failure, shutdown, and leak checks before handoff.
-- [ ] In Stripe test mode, read back the account, create the one-time USD 849 pilot checkout, verify
+- [x] In Stripe test mode, read back the account, create the one-time USD 849 pilot checkout, verify
   no subscription or automatic tax, complete a test checkout, and reconcile the resulting event.
+  *Done 2026-07-23: account read back via paired CLI; test products/prices (USD 750 + USD 99,
+  one-time, no automatic tax) and payment link created; test checkout completed with Stripe's
+  documented test card; `checkout.session.completed`, `payment_intent.succeeded`, and
+  `charge.succeeded` reconciled (amount_total 84900). Note: objects currently live in the
+  operator's existing activated Stripe account, which displays its own business name at checkout;
+  decide account naming/separation before generating any live checkout.*
 - [ ] Repeat with a least-privilege live restricted key only after Stripe activation and every prior
   invoice gate passes; never publish a generic live payment link on the application site.
 
