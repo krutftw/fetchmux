@@ -1,0 +1,4 @@
+# Enables the "Sponsor" button on the GitHub repo.
+# The button appears once GitHub Sponsors is enabled for this account
+# at https://github.com/sponsors/krutftw (owner action: identity + payout setup).
+github: [krutftw]
