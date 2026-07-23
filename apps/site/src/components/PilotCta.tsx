@@ -5,6 +5,7 @@ interface PilotCtaProps {
 
 const defaultCtaUrl = "https://github.com/krutftw/fetchmux";
 const defaultCtaLabel = "Get started on GitHub";
+const firecrawlReferralUrl = "https://firecrawl.link/kurt-robert-landman";
 
 export function PilotCta({ contactUrl, ctaLabel }: PilotCtaProps) {
   const safeUrl = normalizeContactUrl(contactUrl ?? defaultCtaUrl);
@@ -45,6 +46,13 @@ export function PilotCta({ contactUrl, ctaLabel }: PilotCtaProps) {
                 </span>
               </a>
             ) : null}
+            <p className="pilot-referral">
+              Need a provider? New Firecrawl users get{" "}
+              <a href={firecrawlReferralUrl} target="_blank" rel="noreferrer sponsored">
+                10% off their first month
+              </a>{" "}
+              <span className="pilot-referral-note">(referral link)</span>.
+            </p>
             <p className="pilot-safety">
               A hosted, zero-setup version is in the works — star the repo to follow. Provider usage
               is billed by your provider; keys stay in your gateway, never on this site.

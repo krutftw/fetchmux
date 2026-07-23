@@ -63,6 +63,10 @@ Set a gateway key and one provider key in the current PowerShell session. Cost v
 the operator's actual provider plan; the number below is only a shape placeholder and must be
 replaced before using dollar budgets.
 
+> Need a provider account? New Firecrawl users get 10% off their first month via
+> [firecrawl.link/kurt-robert-landman](https://firecrawl.link/kurt-robert-landman) (referral link —
+> FetchMux earns a commission at no extra cost to you).
+
 ```powershell
 $env:FETCHMUX_API_KEY = "replace-with-a-long-random-gateway-key"
 $env:BRAVE_API_KEY = "replace-with-your-provider-key"
