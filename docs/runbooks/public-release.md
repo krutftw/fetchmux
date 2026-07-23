@@ -64,6 +64,13 @@ npm view @fetchmux/mcp version
 npx --yes @fetchmux/mcp --help
 ```
 
+> **2026-07-23 status:** all three 0.1.0 packages were published successfully (npm confirmation
+> emails received), then hidden by npm's automated new-account quarantine — package pages return
+> 403, the owner package list shows zero, and republishing reports the version already exists. A
+> support request was filed the same day from the account email requesting review and restoration.
+> The MCP registry publish (step 3) requires the packages to be publicly visible, so it waits for
+> npm's review. Nothing else in this runbook is blocked by this.
+
 (The MCP binary starts a stdio server; Ctrl+C exits. `npx @fetchmux/mcp` is what registry clients
 will run.)
 
