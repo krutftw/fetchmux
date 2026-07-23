@@ -20,8 +20,8 @@ const restExample = `curl http://127.0.0.1:8787/v1/search \\
 const mcpExample = `{
   "mcpServers": {
     "fetchmux": {
-      "command": "node",
-      "args": ["apps/mcp/dist/main.js"],
+      "command": "npx",
+      "args": ["-y", "@fetchmux/mcp"],
       "env": {
         "FETCHMUX_BASE_URL": "http://127.0.0.1:8787/"
       }
@@ -319,6 +319,7 @@ export function App({ pilotContactUrl, pilotCtaLabel }: AppProps) {
         </a>
         <p>Independent retrieval routing infrastructure for AI agents.</p>
         <div className="footer-links">
+          <a href="/portal">Customer portal</a>
           <a href="https://github.com/krutftw/fetchmux">GitHub</a>
           <a href="/openapi.yaml">OpenAPI contract</a>
           <a href="/llms.txt">Agent brief</a>

@@ -35,29 +35,27 @@ describe("FetchMux launch site", () => {
     expect(screen.queryByText(/illustrative benchmark/i)).not.toBeInTheDocument();
   });
 
-  it("publishes the verified founding-pilot intake without collecting secrets", () => {
+  it("sells the founding pilot through checkout by default", () => {
     render(<App />);
 
     const pilot = screen.getByRole("region", { name: "Founding pilot intake" });
-    expect(within(pilot).getByRole("link", { name: "Apply for a founding pilot" })).toHaveAttribute(
+    expect(within(pilot).getByRole("link", { name: "Buy the founding pilot" })).toHaveAttribute(
       "href",
-      "mailto:hello@fetchmux.com?subject=FetchMux%20founding%20pilot",
+      "https://buy.stripe.com/14A4gz5FDeLL9haf4Q7ok01",
     );
     expect(
-      within(pilot).getByText(/never send provider keys or private queries/i),
+      within(pilot).getByText(/checkout opens your pilot portal immediately/i),
     ).toBeInTheDocument();
     expect(screen.queryByText("Pilot intake is being connected.")).not.toBeInTheDocument();
   });
 
   it("uses only a configured safe contact URL", () => {
     const { rerender } = render(<App pilotContactUrl="javascript:alert('unsafe')" />);
-    expect(
-      screen.queryByRole("link", { name: "Apply for a founding pilot" }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Buy the founding pilot" })).not.toBeInTheDocument();
 
     rerender(<App pilotContactUrl="https://example.com/fetchmux-pilot" />);
 
-    expect(screen.getByRole("link", { name: "Apply for a founding pilot" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Buy the founding pilot" })).toHaveAttribute(
       "href",
       "https://example.com/fetchmux-pilot",
     );

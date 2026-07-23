@@ -3,8 +3,8 @@ interface PilotCtaProps {
   readonly ctaLabel?: string;
 }
 
-const defaultPilotContactUrl = "mailto:hello@fetchmux.com?subject=FetchMux%20founding%20pilot";
-const defaultCtaLabel = "Apply for a founding pilot";
+const defaultPilotContactUrl = "https://buy.stripe.com/14A4gz5FDeLL9haf4Q7ok01";
+const defaultCtaLabel = "Buy the founding pilot";
 
 export function PilotCta({ contactUrl, ctaLabel }: PilotCtaProps) {
   const safeContactUrl = normalizeContactUrl(contactUrl ?? defaultPilotContactUrl);
@@ -52,8 +52,9 @@ export function PilotCta({ contactUrl, ctaLabel }: PilotCtaProps) {
               </div>
             )}
             <p className="pilot-safety">
-              Never send provider keys or private queries by email. Provider usage is billed
-              separately by your provider; applicable taxes are added where required.
+              Checkout opens your pilot portal immediately — no email round trip. Provider usage is
+              billed separately by your provider; keys are exchanged only through the agreed secure
+              channel, never email.
             </p>
           </section>
         </div>

@@ -25,5 +25,7 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /portal
+Disallow: /api/
 
 Sitemap: https://fetchmux.com/sitemap.xml
