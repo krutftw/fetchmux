@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.krutftw/fetchmux",
-  "description": "Read-only MCP server for the FetchMux retrieval router: web search across customer-keyed providers with per-request cost ceilings, deadlines, and auditable route receipts.",
+  "description": "Self-hosted retrieval router for AI agents: budgets, provider routing, route receipts.",
   "repository": {
     "url": "https://github.com/krutftw/fetchmux",
     "source": "github"
