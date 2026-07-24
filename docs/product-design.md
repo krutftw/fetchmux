@@ -153,7 +153,7 @@ The founding release is BYOK and local/self-hostable first.
 - REST endpoints and MCP tools;
 - offline fixtures and an opt-in live benchmark runner;
 - a private customer benchmark report format and a public methodology, subject to provider terms;
-- marketing/pricing site and pilot application flow;
+- a public project site with machine-readable discovery;
 - Docker and local deployment documentation.
 
 ### Explicitly excluded

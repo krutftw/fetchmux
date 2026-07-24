@@ -12,10 +12,10 @@ generic API proxy, pooled-credit reseller, or claim that upstream APIs are inter
 
 ## Status
 
-Founding-pilot build. The machine-readable discovery site is live at
-[`fetchmux.com`](https://fetchmux.com/), while the gateway remains private and single-tenant.
-`FetchMux` is a provisional working name pending formal trademark and company-name clearance. No
-provider partnership, endorsement, or resale right is implied.
+Open source and self-hosted (Apache-2.0). The gateway, TypeScript SDK, and MCP server are published
+on npm and listed in the official MCP registry; the project site is live at
+[`fetchmux.com`](https://fetchmux.com/). `FetchMux` is a provisional working name pending trademark
+clearance. No provider partnership, endorsement, or resale right is implied.
 
 What exists today:
 
@@ -25,21 +25,18 @@ What exists today:
 - BYOK adapters for Brave, Tavily, Exa, and Firecrawl, plus an explicit-opt-in Crossref scholarly
   metadata adapter that needs no provider credential;
 - protected REST, typed TypeScript SDK, and read-only MCP interfaces;
+- published npm packages (`@fetchmux/core`, `@fetchmux/sdk`, `@fetchmux/mcp`) and an official MCP
+  registry entry (`io.github.krutftw/fetchmux`);
 - a 24-case reproducible benchmark workload with a zero-network dry run;
-- a browser-tested founding site and local container packaging;
-- verified `hello@fetchmux.com` pilot intake and `security@fetchmux.com` vulnerability routing;
-- a live, operator-IP-restricted Azure staging gateway deployed by reproducible templates and
-  secret-safe scripts, with zero provider keys enabled;
-- a protected, real-upstream proof through the hardened local production image using Crossref
-  scholarly metadata.
+- non-root Distroless container packaging with a protected, real-upstream Crossref proof;
+- a monitored `security@fetchmux.com` vulnerability route.
 
 What does not exist yet:
 
-- hosted multi-tenant credential storage;
-- provider credit resale or autonomous provider signup;
+- a hosted, multi-tenant service (self-hosted only today);
+- hosted credential storage, provider credit resale, or autonomous provider signup;
 - learned routing backed by customer outcomes;
-- a production or public hosted gateway, public package, completed live provider benchmark, or
-  self-serve signup and billing.
+- a completed live provider benchmark, or self-serve billing.
 
 ## Prerequisites
 
@@ -130,7 +127,8 @@ shell or use an operator-controlled process manager. Docker Compose reads the ig
 | `CROSSREF_ENABLED` | `false` | Exact `true` enables credential-free scholarly metadata egress |
 | `CROSSREF_CONTACT_EMAIL` | none | Valid monitored contact sent to Crossref's polite pool |
 | provider cost variables | none | Customer-plan estimates used by dollar budgets |
-| `VITE_PILOT_CONTACT_URL` | FetchMux pilot email | Optional safe `https:` or `mailto:` CTA override |
+| `VITE_PILOT_CONTACT_URL` | GitHub repo URL | Optional safe `https:`/`mailto:` override for the site call-to-action |
+| `VITE_PILOT_CTA_LABEL` | `Get started on GitHub` | Optional label for the site call-to-action button |
 
 See [provider configuration](docs/runbooks/provider-configuration.md) before enabling `maxCostUsd`.
 
@@ -151,7 +149,7 @@ provider contract.
 
 ### TypeScript SDK
 
-The SDK is a workspace package in the founding build; it has not been published to a registry.
+The SDK is published on npm as [`@fetchmux/sdk`](https://www.npmjs.com/package/@fetchmux/sdk).
 
 ```typescript
 import { FetchMux } from "@fetchmux/sdk";
@@ -241,29 +239,16 @@ npm run dev:site
 
 ## Operating documentation
 
+- [Product design](docs/product-design.md)
 - [Local development](docs/runbooks/local-development.md)
-- [Public release](docs/runbooks/public-release.md)
-- [Launch kit](docs/business/launch-kit-2026-07-22.md)
 - [Deployment](docs/runbooks/deployment.md)
-- [Azure staging](docs/runbooks/azure-staging.md)
+- [Cloudflare site deployment](docs/runbooks/cloudflare-domain.md)
 - [Provider configuration](docs/runbooks/provider-configuration.md)
-- [Incident response](docs/runbooks/incident-response.md)
 - [Data handling](docs/runbooks/data-handling.md)
-- [Product decision](docs/product-design.md)
-- [Operating plan](docs/business/operating-plan.md)
-- [Validation scorecard](docs/business/validation-scorecard.md)
-- [Risk register](docs/business/risk-register.md)
-- [Founding pilot](docs/business/founding-pilot.md)
-- [Discovery script](docs/business/discovery-script.md)
-- [Outreach sequences](docs/business/outreach-sequences.md)
-- [Pilot scorecard](docs/business/pilot-scorecard.md)
-- [Weekly operating review](docs/business/weekly-operating-review.md)
-- [Partnership brief](docs/business/partnership-brief.md)
-- [Legal readiness checklist](docs/business/legal-readiness-checklist.md)
-- [Market evidence](docs/research/market-evidence.md)
-- [Source register](docs/research/source-register.md)
-- [Real-provider proof, 2026-07-18](docs/release/live-provider-proof-2026-07-18.md)
-- [Site deployment evidence, 2026-07-18](docs/release/site-deployment-2026-07-18.md)
+- [Incident response](docs/runbooks/incident-response.md)
+- [Security exceptions](docs/runbooks/security-exceptions.md)
+- [Benchmark methodology](docs/research/benchmark-methodology.md)
+- [OpenAPI contract](docs/openapi.yaml)
 
 ## Logging and persistence
 
@@ -274,6 +259,4 @@ metadata returned to callers as customer data.
 
 ## License
 
-[Apache-2.0](LICENSE). The license grant takes practical effect when the repository is made public;
-swap the LICENSE file first if a different license is preferred. See the
-[public release runbook](docs/runbooks/public-release.md) for the full release sequence.
+[Apache-2.0](LICENSE). Free to self-host, modify, and redistribute under the license terms.
