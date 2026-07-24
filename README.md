@@ -1,155 +1,117 @@
 # FetchMux
 
-FetchMux is a provider-neutral retrieval router for AI agents. A client sends one stable search
-request; FetchMux selects an eligible customer-configured provider, enforces cost and deadline
-limits, normalizes the evidence, and returns an auditable route receipt.
+[![npm](https://img.shields.io/npm/v/@fetchmux/mcp?label=%40fetchmux%2Fmcp&color=cb0000)](https://www.npmjs.com/package/@fetchmux/mcp)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%E2%89%A524-3c873a)](https://nodejs.org)
+[![MCP](https://img.shields.io/badge/MCP-registry-6d5efc)](https://registry.modelcontextprotocol.io)
 
-> One retrieval API. The right provider for every request.
+**One search endpoint for AI agents.** Put a router in front of Brave, Tavily, Exa, Firecrawl, and
+Crossref. Every request carries a hard cost ceiling and deadline; every response comes back with a
+receipt that says which provider ran, why, and what it cost.
 
-The founding product is deliberately narrow: public-web search and page retrieval through
-customer-owned provider accounts, plus an opt-in public scholarly-metadata route. It is not a
-generic API proxy, pooled-credit reseller, or claim that upstream APIs are interchangeable.
+Your agents stop hard-coding a provider into prompts and app code. They send one request shape; the
+gateway picks an eligible provider under a policy you control, enforces the budget and deadline
+before the call, retries safely on failure, and returns normalized results plus a full trace. You
+keep your provider keys — they never leave your gateway.
 
-## Status
+## The receipt
 
-Open source and self-hosted (Apache-2.0). The gateway, TypeScript SDK, and MCP server are published
-on npm and listed in the official MCP registry; the project site is live at
-[`fetchmux.com`](https://fetchmux.com/). `FetchMux` is a provisional working name pending trademark
-clearance. No provider partnership, endorsement, or resale right is implied.
+Nothing is a black box. Every `/v1/search` response carries the routing decision:
 
-What exists today:
+```jsonc
+"route": {
+  "selectedProvider": "brave",
+  "attemptedProviders": ["brave"],
+  "reasonCodes": ["TASK_MATCH", "WITHIN_BUDGET", "RELIABILITY_WEIGHT"],
+  "attempts": [
+    { "provider": "brave", "outcome": "success", "latencyMs": 640, "estimatedCostUsd": 0.005 }
+  ],
+  "estimatedCostUsd": 0.005,
+  "latencyMs": 640,
+  "fallbackUsed": false,
+  "traceId": "rt_b400e7c8"
+}
+```
 
-- deterministic policy ranking with task, cost, quality, latency, and reliability inputs;
-- hard pre-request budgets and absolute deadlines;
-- retryable-failure-only fallback and an in-memory circuit breaker;
-- BYOK adapters for Brave, Tavily, Exa, and Firecrawl, plus an explicit-opt-in Crossref scholarly
-  metadata adapter that needs no provider credential;
-- protected REST, typed TypeScript SDK, and read-only MCP interfaces;
-- published npm packages (`@fetchmux/core`, `@fetchmux/sdk`, `@fetchmux/mcp`) and an official MCP
-  registry entry (`io.github.krutftw/fetchmux`);
-- a 24-case reproducible benchmark workload with a zero-network dry run;
-- non-root Distroless container packaging with a protected, real-upstream Crossref proof;
-- a monitored `security@fetchmux.com` vulnerability route.
+## How it routes
 
-What does not exist yet:
+```
+  agent  ──▶  { query · task · maxCostUsd · maxLatencyMs }
+                             │
+                             ▼
+                      ┌──────────────┐        your keys
+                      │   FetchMux    │ ─────▶ Brave · Tavily · Exa
+                      │    policy     │        Firecrawl · Crossref
+                      └──────────────┘ ◀─────  (bring your own)
+                             │
+                             ▼
+  agent  ◀──  evidence[]  +  route receipt
+```
 
-- a hosted, multi-tenant service (self-hosted only today);
-- hosted credential storage, provider credit resale, or autonomous provider signup;
-- learned routing backed by customer outcomes;
-- a completed live provider benchmark, or self-serve billing.
-
-## Prerequisites
-
-- Node.js 24 and npm 11;
-- Git;
-- Docker Desktop only if using the container path;
-- at least one supported provider key, or an explicitly enabled Crossref configuration, for a ready
-  gateway.
+A provider is eligible only when its credentials, task fit, circuit state, spend, and deadline all
+pass. Budgets and deadlines are eligibility rules, not best-effort hints. Fallback happens only on
+retryable failures.
 
 ## Quick start
 
-Install, build, and test from the repository root:
+No provider account needed — the public Crossref route runs out of the box:
 
-```powershell
-npm clean-install
+```bash
+git clone https://github.com/krutftw/fetchmux
+cd fetchmux
+npm install
 npm run build
-npm test
-```
 
-Set a gateway key and one provider key in the current PowerShell session. Cost values must come from
-the operator's actual provider plan; the number below is only a shape placeholder and must be
-replaced before using dollar budgets.
-
-> Need a provider account? New Firecrawl users get 10% off their first month via
-> [firecrawl.link/kurt-robert-landman](https://firecrawl.link/kurt-robert-landman) (referral link —
-> FetchMux earns a commission at no extra cost to you).
-
-```powershell
-$env:FETCHMUX_API_KEY = "replace-with-a-long-random-gateway-key"
-$env:BRAVE_API_KEY = "replace-with-your-provider-key"
-$env:BRAVE_COST_PER_REQUEST_USD = "replace-with-your-real-cost"
+export FETCHMUX_API_KEY="a-long-random-key"
+export CROSSREF_ENABLED=true
+export CROSSREF_CONTACT_EMAIL="you@example.com"
 npm run dev:gateway
 ```
 
-For a no-provider-account technical proof, Crossref's public REST API can be enabled explicitly.
-Use a real monitored contact address as required by Crossref's polite-pool guidance:
+From another shell:
 
-```powershell
-$env:FETCHMUX_API_KEY = "replace-with-a-long-random-gateway-key"
-$env:CROSSREF_ENABLED = "true"
-$env:CROSSREF_CONTACT_EMAIL = "replace-with-your-contact@example.com"
+```bash
+curl http://127.0.0.1:8787/v1/search \
+  -H "Authorization: Bearer a-long-random-key" \
+  -H "Content-Type: application/json" \
+  -d '{ "query": "retrieval augmented generation", "task": "scholarly", "maxLatencyMs": 8000 }'
+```
+
+To route real web search, set a provider key and use a web task instead:
+
+```bash
+export FETCHMUX_API_KEY="a-long-random-key"
+export BRAVE_API_KEY="your-brave-key"
+export BRAVE_COST_PER_REQUEST_USD="0.005"   # from your provider plan
 npm run dev:gateway
 ```
 
-Send the same request shape with `task = "scholarly"`. This route returns bibliographic metadata and
-DOI links only; it does not copy abstracts or provide page-content extraction.
+New to Firecrawl? New accounts get 10% off the first month through
+[this link](https://firecrawl.link/kurt-robert-landman) (referral — FetchMux earns a small
+commission, no extra cost to you).
 
-In another terminal:
+## Use it from an agent
 
-```powershell
-$headers = @{
-  Authorization = "Bearer replace-with-a-long-random-gateway-key"
-  "Content-Type" = "application/json"
+Point any MCP client (Claude, Cursor, and friends) at the published server:
+
+```json
+{
+  "mcpServers": {
+    "fetchmux": {
+      "command": "npx",
+      "args": ["-y", "@fetchmux/mcp"],
+      "env": {
+        "FETCHMUX_BASE_URL": "http://127.0.0.1:8787/",
+        "FETCHMUX_API_KEY": "your-gateway-key"
+      }
+    }
+  }
 }
-$body = @{
-  query = "latest stable Node.js release"
-  task = "fresh_facts"
-  priority = "balanced"
-  maxCostUsd = 0.02
-  maxLatencyMs = 8000
-  limit = 8
-} | ConvertTo-Json
-
-Invoke-RestMethod -Method Post -Uri "http://127.0.0.1:8787/v1/search" -Headers $headers -Body $body
 ```
 
-`/health` reports process health. `/ready` returns `503` until at least one credentialed provider or
-the valid opt-in Crossref route is configured. Protected `/v1/*` routes return `503` if FetchMux
-authentication itself has no key.
+Two read-only tools: `search_web` and `preview_search_route`.
 
-## Configuration
-
-The process does not automatically load `.env` during local Node development. Set variables in the
-shell or use an operator-controlled process manager. Docker Compose reads the ignored `.env` file.
-
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `FETCHMUX_API_KEY` | none | One protected-route bearer key |
-| `FETCHMUX_API_KEYS` | none | Comma-separated keys for rotation |
-| `FETCHMUX_AUTH_DISABLED` | `false` | Exact `true` bypass for trusted local use only |
-| `FETCHMUX_ALLOWED_ORIGINS` | none | Comma-separated browser origins; CORS is absent when empty |
-| `FETCHMUX_HOST` | `127.0.0.1` | Gateway bind address |
-| `FETCHMUX_PORT` | `8787` | Gateway TCP port |
-| `BRAVE_API_KEY` | none | Brave customer credential |
-| `TAVILY_API_KEY` | none | Tavily customer credential |
-| `EXA_API_KEY` | none | Exa customer credential |
-| `FIRECRAWL_API_KEY` | none | Firecrawl customer credential |
-| `CROSSREF_ENABLED` | `false` | Exact `true` enables credential-free scholarly metadata egress |
-| `CROSSREF_CONTACT_EMAIL` | none | Valid monitored contact sent to Crossref's polite pool |
-| provider cost variables | none | Customer-plan estimates used by dollar budgets |
-| `VITE_PILOT_CONTACT_URL` | GitHub repo URL | Optional safe `https:`/`mailto:` override for the site call-to-action |
-| `VITE_PILOT_CTA_LABEL` | `Get started on GitHub` | Optional label for the site call-to-action button |
-
-See [provider configuration](docs/runbooks/provider-configuration.md) before enabling `maxCostUsd`.
-
-## Interfaces
-
-### REST
-
-| Method | Path | Auth | Behavior |
-| --- | --- | --- | --- |
-| `GET` | `/health` | public | Process health and version |
-| `GET` | `/ready` | public | Provider readiness |
-| `GET` | `/v1/providers` | bearer | Safe provider configuration status |
-| `POST` | `/v1/route/preview` | bearer | Ranked candidates, no provider call |
-| `POST` | `/v1/search` | bearer | Routed retrieval and route receipt |
-
-The complete FetchMux contract is [docs/openapi.yaml](docs/openapi.yaml). It is not an upstream
-provider contract.
-
-### TypeScript SDK
-
-The SDK is published on npm as [`@fetchmux/sdk`](https://www.npmjs.com/package/@fetchmux/sdk).
+Or use the typed SDK, [`@fetchmux/sdk`](https://www.npmjs.com/package/@fetchmux/sdk):
 
 ```typescript
 import { FetchMux } from "@fetchmux/sdk";
@@ -160,76 +122,96 @@ const client = new FetchMux({
   fetch: globalThis.fetch.bind(globalThis),
 });
 
-const response = await client.search({
+const res = await client.search({
   query: "latest stable Node.js release",
   task: "fresh_facts",
   maxCostUsd: 0.02,
 });
 ```
 
-### MCP
+## Providers
 
-Build the workspace, start the gateway, and add the compiled stdio server to an MCP client:
+Bring your own key for each. Set the matching `*_API_KEY`, plus an optional
+`*_COST_PER_REQUEST_USD` if you want dollar budgets enforced.
 
-```json
-{
-  "mcpServers": {
-    "fetchmux": {
-      "command": "node",
-      "args": ["C:/absolute/path/to/fetchmux/apps/mcp/dist/main.js"],
-      "env": {
-        "FETCHMUX_BASE_URL": "http://127.0.0.1:8787/",
-        "FETCHMUX_API_KEY": "replace-with-the-gateway-key"
-      }
-    }
-  }
-}
+| Provider | Use | Key |
+| --- | --- | --- |
+| Brave | web search | `BRAVE_API_KEY` |
+| Tavily | web search, research | `TAVILY_API_KEY` |
+| Exa | web search, docs | `EXA_API_KEY` |
+| Firecrawl | page content | `FIRECRAWL_API_KEY` |
+| Crossref | scholarly metadata | none (`CROSSREF_ENABLED=true`) |
+
+## REST endpoints
+
+| Method | Path | Auth | Behavior |
+| --- | --- | --- | --- |
+| `GET` | `/health` | public | Process health and version |
+| `GET` | `/ready` | public | Provider readiness |
+| `GET` | `/v1/providers` | bearer | Provider configuration status |
+| `POST` | `/v1/route/preview` | bearer | Ranked candidates, no provider call |
+| `POST` | `/v1/search` | bearer | Routed retrieval and route receipt |
+
+Full contract: [docs/openapi.yaml](docs/openapi.yaml).
+
+<details>
+<summary><b>All configuration variables</b></summary>
+
+The process does not auto-load `.env` in local Node development; set variables in the shell or a
+process manager. Docker Compose reads the ignored `.env` file.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `FETCHMUX_API_KEY` | none | Protected-route bearer key |
+| `FETCHMUX_API_KEYS` | none | Comma-separated keys for rotation |
+| `FETCHMUX_AUTH_DISABLED` | `false` | Exact `true` bypasses auth (trusted local use only) |
+| `FETCHMUX_ALLOWED_ORIGINS` | none | Comma-separated browser origins; no CORS when empty |
+| `FETCHMUX_HOST` | `127.0.0.1` | Bind address |
+| `FETCHMUX_PORT` | `8787` | TCP port |
+| `BRAVE_API_KEY` / `TAVILY_API_KEY` / `EXA_API_KEY` / `FIRECRAWL_API_KEY` | none | Provider credentials |
+| `CROSSREF_ENABLED` | `false` | Exact `true` enables the credential-free scholarly route |
+| `CROSSREF_CONTACT_EMAIL` | none | Monitored contact for Crossref's polite pool |
+| `*_COST_PER_REQUEST_USD` | none | Per-provider cost estimates used by dollar budgets |
+
+See [provider configuration](docs/runbooks/provider-configuration.md) before enabling `maxCostUsd`.
+
+</details>
+
+## Run in Docker
+
+```bash
+cp .env.example .env    # add your keys, never commit it
+docker compose up --build -d
+curl http://127.0.0.1:8787/health
 ```
 
-The tools are `search_web` and `preview_search_route`; both are annotated read-only.
+Non-root Distroless image: Linux capabilities dropped, read-only root filesystem, provider
+credentials passed only at container start.
 
 ## Benchmark
 
-Validate all 96 founding case-provider pairs without network calls or credits:
+Validate every case and provider pairing with no network calls or credits:
 
-```powershell
+```bash
 npm run benchmark -- --workload benchmarks/workloads/founding-v1.json --mode dry-run
 ```
 
-Live mode is deliberately harder to trigger. It requires provider credentials, explicit
-`--confirm-live`, and an ignored output file:
+Live mode needs provider keys and an explicit `--confirm-live`. Check each provider's terms before
+publishing results — see the [benchmark methodology](docs/research/benchmark-methodology.md).
 
-```powershell
-$env:FETCHMUX_CODE_VERSION = git rev-parse HEAD
-npm run benchmark -- --workload benchmarks/workloads/founding-v1.json --mode live --confirm-live --output benchmarks/results/founding-v1-live.json
-```
+## What it is (and isn't)
 
-Live reports are private by default. Provider terms can restrict benchmarking, storage, or
-performance disclosure; review the account's accepted terms before running live and obtain counsel
-and any required written permission before sharing results. Read the
-[benchmark methodology](docs/research/benchmark-methodology.md) before interpreting a run.
+Open source, self-hosted, single-tenant, BYOK. Route events go to stdout as JSON and exclude your
+query text, keys, and result content by default. No database, no telemetry.
 
-## Docker
+It is not a hosted service, a pooled-credit reseller, or a claim that these providers are
+interchangeable. Provider names are the adapters it ships with, not partnerships. A hosted version
+is on the roadmap — [star the repo](https://github.com/krutftw/fetchmux) to follow.
 
-Copy the environment template, enter real secrets locally, and start the loopback-only container:
+## Development
 
-```powershell
-Copy-Item .env.example .env
-# Edit .env locally. Never commit it.
-docker compose up --build -d
-Invoke-RestMethod http://127.0.0.1:8787/health
-docker compose logs --follow gateway
-```
-
-The build and runtime image digests pin the official Node 24 build image and supported Distroless
-Node 24 Debian 13 `nonroot` runtime. The image includes production dependencies only for the gateway
-and its two internal packages, drops Linux capabilities in Compose, supports a read-only root
-filesystem, and receives provider credentials only at container start.
-
-## Development commands
-
-```powershell
-npm test
+```bash
+npm test          # 232 tests
 npm run typecheck
 npm run lint
 npm run build
@@ -237,26 +219,15 @@ npm run dev:gateway
 npm run dev:site
 ```
 
-## Operating documentation
+More docs: [product design](docs/product-design.md) ·
+[local development](docs/runbooks/local-development.md) ·
+[deployment](docs/runbooks/deployment.md) ·
+[provider configuration](docs/runbooks/provider-configuration.md) ·
+[data handling](docs/runbooks/data-handling.md) ·
+[incident response](docs/runbooks/incident-response.md)
 
-- [Product design](docs/product-design.md)
-- [Local development](docs/runbooks/local-development.md)
-- [Deployment](docs/runbooks/deployment.md)
-- [Cloudflare site deployment](docs/runbooks/cloudflare-domain.md)
-- [Provider configuration](docs/runbooks/provider-configuration.md)
-- [Data handling](docs/runbooks/data-handling.md)
-- [Incident response](docs/runbooks/incident-response.md)
-- [Security exceptions](docs/runbooks/security-exceptions.md)
-- [Benchmark methodology](docs/research/benchmark-methodology.md)
-- [OpenAPI contract](docs/openapi.yaml)
-
-## Logging and persistence
-
-Gateway route events go to stdout as structured JSON and exclude query text, provider keys, raw
-provider bodies, and result content. The founding gateway has no database and no built-in metrics
-retention. Configure process-log retention deliberately and treat normalized URLs and provider
-metadata returned to callers as customer data.
+Security issues: [security@fetchmux.com](mailto:security@fetchmux.com).
 
 ## License
 
-[Apache-2.0](LICENSE). Free to self-host, modify, and redistribute under the license terms.
+[Apache-2.0](LICENSE). Free to self-host, modify, and redistribute.
